@@ -1,0 +1,8 @@
+{
+  "name": "holocam",
+  "version": "0.0.1",
+  "description": "controlling a robotic camera to view holograms",
+  "dependencies": {
+    "express": "^4.12.0"
+  }
+}
