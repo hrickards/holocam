@@ -4,5 +4,9 @@
   "description": "controlling a robotic camera to view holograms",
   "dependencies": {
     "express": "^4.12.0"
-  }
+  },
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/hrickards/holocam.git"
+	}
 }
