@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>Holocam</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		window.App = {
+			'initialize': function() {
+				// Initialize web sockets
+				this.initialize_socket();
+
+				// Bind motion buttons
+				this.bind_move_button("left", "left");
+				this.bind_move_button("right", "right");
+				this.bind_move_button("up", "up");
+				this.bind_move_button("down", "down");
+			},
+
+			// Open a web socket
+			'initialize_socket': function(){
+				this.socket = io();
+			},
+
+			// When a movement button is pressed, send the relevant command through the socket
+			'bind_move_button': function(btn_id, command) {
+				$("#" + btn_id).on('click', function() {
+					this.socket.emit('move', command);
+				}.bind(this));
+			}
+		};
+		$(document).ready(function() {
+			window.App.initialize();
+		});
+
+	</script>
+</head>
+<body>
+	<h1>Holocam</h1>
+	<div id="controls">
+		<a id="left">&#8592;</a>
+		<a id="right">&#8594;</a>
+		<a id="up">&#8593;</a>
+		<a id="down">&#8595;</a>
+	</div>
+</body>
+</html>
