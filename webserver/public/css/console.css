@@ -1,0 +1,5 @@
+.input { color: black; } 
+.output { color: green; } 
+.error { color: red; }
+.line { padding: 3px 0; }
+#entryLine { width: 100%; }
