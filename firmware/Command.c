@@ -25,13 +25,6 @@
 #define GET_TARGET 0x0F
 #define MOVE_REL_RETURN 0x10
 
-// Convert bytes to/from positions containing (large) integers
-// position is a signed 16-bit int, and we can't use 0D to
-// represent any 8-bit byte of it because that's our newline
-// So 3 bytes are required
-void PositionToBytes(position pos, byte *b1, byte *b2, byte *b3);
-void BytesToPosition(byte b1, byte b2, byte b3, position *pos);
-
 // Initial setup of the command interface
 void CommandInit(void) {
 	UARTInit();
@@ -39,41 +32,20 @@ void CommandInit(void) {
 
 // Parse and act upon a command on each run of the main loop
 void CommandSpin(void) {
+	// Check we have a sequence of characters available up to the newline,
+	// becuase we don't want any of our read operations to block
 	if (UARTLineAvailable()) {
 		byte command = UARTReadByte();
 
 		// TODO: Code here is very duplicated. Is there a way we can reduce it without losing speed?
 		switch (command) {
+			// Move to a absolutely-specified position
 			case MOVE_ABS: {
-				// Read position bytes
-				byte x1 = UARTReadByte();
-				byte x2 = UARTReadByte();
-				byte x3 = UARTReadByte();
-				byte y1 = UARTReadByte();
-				byte y2 = UARTReadByte();
-				byte y3 = UARTReadByte();
-				byte theta1 = UARTReadByte();
-				byte theta2 = UARTReadByte();
-				byte theta3 = UARTReadByte();
-				byte phi1 = UARTReadByte();
-				byte phi2 = UARTReadByte();
-				byte phi3 = UARTReadByte();
-
-				// If any of those bytes are a newline, then something went wrong in transmission
-				// and we should ignore that command
-				if ((x1 == LINE_END) || (x2 == LINE_END) || (x3 == LINE_END) || (y1 == LINE_END) || (y2 == LINE_END) || (y3 == LINE_END) || (theta1 == LINE_END) || (theta2 == LINE_END) || (theta3 == LINE_END) || (phi1 == LINE_END) || (phi2 == LINE_END) || (phi3 == LINE_END)) {
-					// Return an error
-					UARTWriteByte(MOVE_ABS_RETURN);
-					UARTWriteByte(FAILURE);
-					UARTWriteByte(LINE_END);
-				}
-
-				// Convert to positions
-				position xPos, yPos, thetaPos, phiPos;
-				BytesToPosition(x1, x2, x3, &xPos);
-				BytesToPosition(y1, y2, y3, &yPos);
-				BytesToPosition(theta1, theta2, theta3, &thetaPos);
-				BytesToPosition(phi1, phi2, phi3, &phiPos);
+				// Read positions
+				position xPos = UARTReadPosition();
+				position yPos = UARTReadPosition();
+				position thetaPos = UARTReadPosition();
+				position phiPos = UARTReadPosition();
 
 				// Try and move there
 				UARTWriteByte(MOVE_ABS_RETURN);
@@ -82,42 +54,17 @@ void CommandSpin(void) {
 				} else {
 					UARTWriteByte(FAILURE);
 				}
-
 				UARTWriteByte(LINE_END);
-
 				break;
 			}
 
+			// move to a position specified relative to the current position
 			case MOVE_REL: {
-				// Read position bytes
-				byte x1 = UARTReadByte();
-				byte x2 = UARTReadByte();
-				byte x3 = UARTReadByte();
-				byte y1 = UARTReadByte();
-				byte y2 = UARTReadByte();
-				byte y3 = UARTReadByte();
-				byte theta1 = UARTReadByte();
-				byte theta2 = UARTReadByte();
-				byte theta3 = UARTReadByte();
-				byte phi1 = UARTReadByte();
-				byte phi2 = UARTReadByte();
-				byte phi3 = UARTReadByte();
-
-				// If any of those bytes are a newline, then something went wrong in transmission
-				// and we should ignore that command
-				if ((x1 == LINE_END) || (x2 == LINE_END) || (x3 == LINE_END) || (y1 == LINE_END) || (y2 == LINE_END) || (y3 == LINE_END) || (theta1 == LINE_END) || (theta2 == LINE_END) || (theta3 == LINE_END) || (phi1 == LINE_END) || (phi2 == LINE_END) || (phi3 == LINE_END)) {
-					// Return an error
-					UARTWriteByte(MOVE_REL_RETURN);
-					UARTWriteByte(FAILURE);
-					UARTWriteByte(LINE_END);
-				}
-
-				// Convert to positions
-				position xPos, yPos, thetaPos, phiPos;
-				BytesToPosition(x1, x2, x3, &xPos);
-				BytesToPosition(y1, y2, y3, &yPos);
-				BytesToPosition(theta1, theta2, theta3, &thetaPos);
-				BytesToPosition(phi1, phi2, phi3, &phiPos);
+				// Read positions
+				position xPos = UARTReadPosition();
+				position yPos = UARTReadPosition();
+				position thetaPos = UARTReadPosition();
+				position phiPos = UARTReadPosition();
 
 				// Try and move there
 				UARTWriteByte(MOVE_REL_RETURN);
@@ -126,114 +73,73 @@ void CommandSpin(void) {
 				} else {
 					UARTWriteByte(FAILURE);
 				}
-
 				UARTWriteByte(LINE_END);
-
 				break;
 			}
 
+			// Home (move until the endstop is hit) the X axis
 			case HOME_X:
 				MoveHomeX();
 				break;
 
+			// Home (move until the endstop is hit) the Y axis
 			case HOME_Y:
 				MoveHomeX();
 				break;
 
+			// Power up all motors
 			case START:
 				MotorStart();
 				break;
 
+			// Cancel any future moves, and power down all motors	
 			case STOP:
 				MotorStop();
 				break;
 
+			// Power down all motors
 			case ABORT:
 				MoveAbort();
 				break;
 
+			// Send back the current platform position coordinates
 			case GET_POS: {
 				// Get current position
 				position xPos, yPos, thetaPos, phiPos;
 				MoveGetCurrentPosition(&xPos, &yPos, &thetaPos, &phiPos); 
 
-				// Convert to bytes
-				byte x1, x2, x3, y1, y2, y3, theta1, theta2, theta3, phi1, phi2, phi3;
-				PositionToBytes(xPos, &x1, &x2, &x3);
-				PositionToBytes(yPos, &y1, &y2, &y3);
-				PositionToBytes(thetaPos, &theta1, &theta2, &theta3);
-				PositionToBytes(phiPos, &phi1, &phi2, &phi3);
-
 				// Output
-				UARTWriteByte(POS_RETURN);
-				UARTWriteByte(x1);
-				UARTWriteByte(x2);
-				UARTWriteByte(x3);
-				UARTWriteByte(y1);
-				UARTWriteByte(y2);
-				UARTWriteByte(y3);
-				UARTWriteByte(theta1);
-				UARTWriteByte(theta2);
-				UARTWriteByte(theta3);
-				UARTWriteByte(phi1);
-				UARTWriteByte(phi2);
-				UARTWriteByte(phi3);
+				UARTWriteByte(TARGET_RETURN);
+				UARTWritePosition(xPos);
+				UARTWritePosition(yPos);
+				UARTWritePosition(thetaPos);
+				UARTWritePosition(phiPos);
 				UARTWriteByte(LINE_END);
 				break;
 			}
 
+			// Send back the coordinates of the position the platform will end up
+			// at after all current moves
 			case GET_TARGET: {
 				// Get target position
 				position xPos, yPos, thetaPos, phiPos;
 				MoveGetTargetPosition(&xPos, &yPos, &thetaPos, &phiPos); 
 
-				// Convert to bytes
-				byte x1, x2, x3, y1, y2, y3, theta1, theta2, theta3, phi1, phi2, phi3;
-				PositionToBytes(xPos, &x1, &x2, &x3);
-				PositionToBytes(yPos, &y1, &y2, &y3);
-				PositionToBytes(thetaPos, &theta1, &theta2, &theta3);
-				PositionToBytes(phiPos, &phi1, &phi2, &phi3);
-
 				// Output
 				UARTWriteByte(TARGET_RETURN);
-				UARTWriteByte(x1);
-				UARTWriteByte(x2);
-				UARTWriteByte(x3);
-				UARTWriteByte(y1);
-				UARTWriteByte(y2);
-				UARTWriteByte(y3);
-				UARTWriteByte(theta1);
-				UARTWriteByte(theta2);
-				UARTWriteByte(theta3);
-				UARTWriteByte(phi1);
-				UARTWriteByte(phi2);
-				UARTWriteByte(phi3);
+				UARTWritePosition(xPos);
+				UARTWritePosition(yPos);
+				UARTWritePosition(thetaPos);
+				UARTWritePosition(phiPos);
 				UARTWriteByte(LINE_END);
 				break;
 			}
 		}
 
-		// Read until the end of line
+		// Read until the end of line to ensure we didn't miss any characters
 		byte b = 0x00;
 		do {
 			b = UARTReadByte();
 		} while (b != LINE_END);
 	}
-}
-
-
-// Coding scheme:
-// p1, p2 = bytes of position (MSB p1 -> LSB p2 = MSB -> LSB)
-// b1, b2 = p1, p2 with LSB set to 0 (LSB 0x0D = 1)
-// b3 = (?, ?, ?, ?, ?, ?, LSB b1, LSB b2) TODO: Make the other bits parity bits
-void PositionToBytes(position pos, byte *b1, byte *b2, byte *b3) {
-	*b1 = (byte) ((pos >> 8) & 0xFE);
-	*b2 = (byte) (pos & 0xFE);
-	*b3 = (byte) ((pos & 0x01) | ((pos >> 7) & 0x02));
-}
-
-void BytesToPosition(byte b1, byte b2, byte b3, position *pos) {
-	b1 |= ((b3 & 0x02) >> 1);
-	b2 |= (b3 & 0x01);
-	*pos = (((position) b1) << 8) | b2;
 }

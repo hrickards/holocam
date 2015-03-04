@@ -2,7 +2,7 @@
    Move.c
 
 	 Handles movements (stored in a FIFO implemented as a ring buffer), and then
-	 steps them (pretty rudimentarily, just using simple Bresenham at this point)
+	 steps them (very rudimentarily at the moment --- no speed control)
 
 	 All position in here stored as an integer (of type position, defined in
 	 Move.h, at the moment as a signed int8)
@@ -89,6 +89,140 @@ void MoveInit(void) {
 	MoveHomeY();
 }
 
+// Called on each iteration of the main loop (NOT via interrupts)
+void MoveSpin(void) {
+	// If there are movements we can make in the buffer, and we're currently not moving,
+	// make them
+	if (!CurrentMovement && !BufferEmpty()) {
+		RingRemove(&TargetX, &TargetY, &TargetTheta, &TargetPhi);
+		PrecalculateMovement();
+		MoveStep();
+	}
+}
+
+// Called before the start of each movement.
+// Calculates anything we need to calculate or set before beginning a movement
+void PrecalculateMovement(void) {
+	CurrentMovement = true;
+	XDir = (CurrentX < TargetX);
+	YDir = (CurrentY < TargetY);
+	ThetaDir = (CurrentTheta < TargetTheta);
+	PhiDir = (CurrentPhi < TargetPhi);
+}
+
+// Perform one step in the movement, and set MoveStep to be called again
+// via a timer
+void MoveStep(void) {
+	// Increment each stepper in the direction required, if it needs to be moved
+	if (CurrentX != TargetX) {
+		if (XDir) { MotorXStep(true); CurrentX++; } else { MotorXStep(false); CurrentX--; }
+	}
+	if (CurrentY != TargetY) {
+		if (YDir) { MotorYStep(true); CurrentY++; } else { MotorYStep(false); CurrentY--; }
+	}
+	if (CurrentTheta != TargetTheta) {
+		if (ThetaDir) { MotorThetaStep(true); CurrentTheta++; } else { MotorThetaStep(false); CurrentTheta--; }
+	}
+	if (CurrentPhi != TargetPhi) {
+		if (PhiDir) { MotorPhiStep(true); CurrentPhi++; } else { MotorPhiStep(false); CurrentPhi--; }
+	}
+
+	if ((CurrentX != TargetX) || (CurrentY != TargetY) || (CurrentTheta != TargetTheta) || (CurrentPhi != TargetPhi)) {
+		// If we still have movements to make, enable timer
+		TCNT2 = 0;
+		TIMSK2 |= _BV(TOIE2);
+	} else {
+		FinishMovement();
+	}
+}
+// Called when our timer overflows
+ISR(TIMER2_OVF_vect) {
+	// Disable timer
+	TIMSK2 &= ~_BV(TOIE2);
+
+	// Move another step
+	MoveStep();
+}
+
+// Called after a movement happens
+void FinishMovement(void) {
+	// We're not moving anymore
+	CurrentMovement = false;
+}
+
+// Move to a new absolutely specified position
+inline int MoveAddAbsolute(position x, position y, position theta, position phi) { return RingAdd(x, y, theta, phi); }
+
+// Move relative to the current endgoal position (the last element in the ring buffer, or the target of
+// the current move if the buffer is empty)
+int MoveAddRelative(position x, position y, position theta, position phi) {
+	// Calculate an absolute position to move to
+	position endgoalX = 0, endgoalY = 0, endgoalTheta = 0, endgoalPhi = 0;
+	ReadEndgoalPosition(&endgoalX, &endgoalY, &endgoalTheta, &endgoalPhi);
+
+	// SafeAdd ensures we don't have integer overflows
+	return MoveAddAbsolute(SafeAdd(endgoalX, x), SafeAdd(endgoalY, y), SafeAdd(endgoalTheta, theta), SafeAdd(endgoalPhi, phi));
+}
+
+// Safely add two positions avoiding integer overflow. Just don't add if there would
+// be one.
+// This is SLOW: don't call it as part of actual movement code
+static position SafeAdd(position a, position b) {
+	// Detect overflow
+	if (a > 0 && b > POSITION_MAX - a) {
+		return a;
+	} else if (a < 0 && b < POSITION_MIN - a) {
+		return a;
+	} else {
+		return a+b;
+	}
+}
+
+// Cancel any buffered moves
+// TODO: Cancel the current move (interrupt-safely)
+void MoveAbort(void) {
+	RingHead = RingTail;
+}
+
+// Home x and y axes with endstops
+void MoveHomeX(void) {
+	// TODO
+}
+
+void MoveHomeY(void) {
+	// TODO
+}
+
+// Read the last position tuple in the ring and store it in the passed variables
+// If the ring is empty, use Target position variables instead
+void ReadEndgoalPosition(position *x, position *y, position *theta, position *phi) {
+	if (RingHead != RingTail) {
+		// Buffer not empty
+		// Find the previous RingHead, without doing modulo of a negative number, because
+		// that doesn't return what you might think in C
+		byte prev_head = (RingHead + RING_SIZE - 1) % RING_SIZE;
+		*x = RingDataX[prev_head];
+		*y = RingDataY[prev_head];
+		*theta = RingDataTheta[prev_head];
+		*phi = RingDataPhi[prev_head];
+	} else {
+		// Nothing in buffer
+		*x = TargetX;
+		*y = TargetY;
+		*theta = TargetTheta;
+		*phi = TargetPhi;
+	}
+}
+inline void MoveGetTargetPosition(position *x, position *y, position *theta, position *phi) { ReadEndgoalPosition(x, y, theta, phi); }
+// Get the current position
+void MoveGetCurrentPosition(position *x, position *y, position *theta, position *phi) {
+	*x = CurrentX;
+	*y = CurrentY;
+	*theta = CurrentTheta;
+	*phi = CurrentPhi;
+}
+
+// Raw ring buffer access functions
 // If the head and tail are equal, the buffer is empty
 bool BufferEmpty(void) { return (RingHead == RingTail); }
 
@@ -128,132 +262,3 @@ static int RingRemove(position *x, position *y, position *theta, position *phi) 
 	}
 }
 
-// Read the last position tuple in the ring and store it in the passed variables
-// If the ring is empty, use Target position variables instead
-void ReadEndgoalPosition(position *x, position *y, position *theta, position *phi) {
-	if (RingHead != RingTail) {
-		// Buffer not empty
-		// Find the previous RingHead, without doing modulo of a negative number, because
-		// that doesn't return what you might think in C
-		byte prev_head = (RingHead + RING_SIZE - 1) % RING_SIZE;
-		*x = RingDataX[prev_head];
-		*y = RingDataY[prev_head];
-		*theta = RingDataTheta[prev_head];
-		*phi = RingDataPhi[prev_head];
-	} else {
-		// Nothing in buffer
-		*x = TargetX;
-		*y = TargetY;
-		*theta = TargetTheta;
-		*phi = TargetPhi;
-	}
-}
-inline void MoveGetTargetPosition(position *x, position *y, position *theta, position *phi) { ReadEndgoalPosition(x, y, theta, phi); }
-
-void MoveSpin(void) {
-	// If there are movements we can make in the buffer, and we're currently not moving,
-	// make them
-	if (!CurrentMovement && !BufferEmpty()) {
-		RingRemove(&TargetX, &TargetY, &TargetTheta, &TargetPhi);
-		PrecalculateMovement();
-		MoveStep();
-	}
-}
-
-// Anything we need to calculate or set before beginning a movement
-void PrecalculateMovement(void) {
-	CurrentMovement = true;
-	XDir = (CurrentX < TargetX);
-	YDir = (CurrentY < TargetY);
-	ThetaDir = (CurrentTheta < TargetTheta);
-	PhiDir = (CurrentPhi < TargetPhi);
-}
-
-// Perform one step
-void MoveStep(void) {
-	// Increment each stepper in the direction required, if it needs to be moved
-	if (CurrentX != TargetX) {
-		if (XDir) { MotorXStep(true); CurrentX++; } else { MotorXStep(false); CurrentX--; }
-	}
-	if (CurrentY != TargetY) {
-		if (YDir) { MotorYStep(true); CurrentY++; } else { MotorYStep(false); CurrentY--; }
-	}
-	if (CurrentTheta != TargetTheta) {
-		if (ThetaDir) { MotorThetaStep(true); CurrentTheta++; } else { MotorThetaStep(false); CurrentTheta--; }
-	}
-	if (CurrentPhi != TargetPhi) {
-		if (PhiDir) { MotorPhiStep(true); CurrentPhi++; } else { MotorPhiStep(false); CurrentPhi--; }
-	}
-
-	if ((CurrentX != TargetX) || (CurrentY != TargetY) || (CurrentTheta != TargetTheta) || (CurrentPhi != TargetPhi)) {
-		// If we still have movements to make, enable timer
-		TCNT2 = 0;
-		TIMSK2 |= _BV(TOIE2);
-	} else {
-		FinishMovement();
-	}
-}
-// Called when our timer overflows
-ISR(TIMER2_OVF_vect) {
-	// Disable timer
-	TIMSK2 &= ~_BV(TOIE2);
-
-	// Move another step
-	MoveStep();
-}
-
-// Called after a movement happens
-void FinishMovement(void) {
-	// We're not moving anymore
-	CurrentMovement = false;
-}
-
-// Get the current position
-void MoveGetCurrentPosition(position *x, position *y, position *theta, position *phi) {
-	*x = CurrentX;
-	*y = CurrentY;
-	*theta = CurrentTheta;
-	*phi = CurrentPhi;
-}
-
-// Move to a new absolutely specified position
-inline int MoveAddAbsolute(position x, position y, position theta, position phi) { return RingAdd(x, y, theta, phi); }
-
-// Move relative to the current endgoal position (the last element in the ring buffer, or the target of
-// the current move if the buffer is empty)
-int MoveAddRelative(position x, position y, position theta, position phi) {
-	// Calculate an absolute position to move to
-	position endgoalX = 0, endgoalY = 0, endgoalTheta = 0, endgoalPhi = 0;
-	ReadEndgoalPosition(&endgoalX, &endgoalY, &endgoalTheta, &endgoalPhi);
-
-	// SafeAdd ensures we don't have integer overflows
-	return MoveAddAbsolute(SafeAdd(endgoalX, x), SafeAdd(endgoalY, y), SafeAdd(endgoalTheta, theta), SafeAdd(endgoalPhi, phi));
-}
-
-// Safely add two positions avoiding integer overflow. Just don't add if there would
-// be one.
-// This is SLOW: don't call it as part of actual movement code
-static position SafeAdd(position a, position b) {
-	// Detect overflow
-	if (a > 0 && b > POSITION_MAX - a) {
-		return a;
-	} else if (a < 0 && b < POSITION_MIN - a) {
-		return a;
-	} else {
-		return a+b;
-	}
-}
-
-// Cancel any buffered moves
-void MoveAbort(void) {
-	RingHead = RingTail;
-}
-
-// Home x and y axes with endstops
-void MoveHomeX(void) {
-	// TODO
-}
-
-void MoveHomeY(void) {
-	// TODO
-}

@@ -72,9 +72,11 @@ void UARTInit(void) {
 	RXRingTail = 0;
 }
 
+// Check status of our ring buffers
+bool UARTByteAvailable(void) { return !RXBufferEmpty(); }
+bool UARTLineAvailable(void) { return LinesPresent > 0; }
 
-// From here on out, ring buffer code copied from
-// http://www.downtowndougbrown.com/2014/08/microcontrollers-uarts/
+// Write a byte out over serial (blocking if ring buffer (big) is full)
 void UARTWriteByte(byte data) {
     // Wait until there's room in the ring buffer
     while (TXBufferFull());
@@ -87,9 +89,7 @@ void UARTWriteByte(byte data) {
     UCSR0B |= _BV(UDRIE0);
 }
 
-bool UARTByteAvailable(void) { return !RXBufferEmpty(); }
-bool UARTLineAvailable(void) { return LinesPresent > 0; }
- 
+// Read a byte in over serial (blocking)
 byte UARTReadByte(void) {
     // Wait until a byte is available to read
     while (RXBufferEmpty());
@@ -97,7 +97,64 @@ byte UARTReadByte(void) {
     // Then return the byte
     return RXRingRemove();
 }
+
+// Read in three bytes and decode them into a two-byte position
+// We have this coding scheme so that newlines (0x0D) are never sent as
+// data bytes, because we're using them as stop bytes
+// TODO: Could do this much more efficiently, but does that really matter?
+// Coding scheme:
+// p1, p2 = bytes of position (MSB p1 -> LSB p2 = MSB -> LSB)
+// b1, b2 = p1, p2 with LSB set to 0 (LSB 0x0D = 1)
+// b3 = (?, ?, ?, ?, ?, ?, LSB b1, LSB b2) TODO: Make the other bits parity bits
+position UARTReadPosition(void) {
+	// Read in raw bytes
+	byte b1 = UARTReadByte();
+	byte b2 = UARTReadByte();
+	byte b3 = UARTReadByte();
+
+	// TODO Check none of them are newlines
+
+	// Decode
+	b1 |= ((b3 & 0x02) >> 1);
+	b2 |= (b3 & 0x01);
+	return (((position) b1) << 8) | ((position) b2);	
+}
+
+// Given a position, write out three bytes using our coding scheme above
+void UARTWritePosition(position pos) {
+	// Encode
+	byte b1 = (byte) ((pos >> 8) & 0xFE);
+	byte b2 = (byte) (pos & 0xFE);
+	byte b3 = (byte) ((pos & 0x01) | ((pos >> 7) & 0x02));
+
+	// Write out raw bytes
+	UARTWriteByte(b1);
+	UARTWriteByte(b2);
+	UARTWriteByte(b3);
+}
  
+// When data received, add it to RX buffer
+ISR(USART_RX_vect) {
+    byte data = UDR0;
+    RXRingAdd(data);
+}
+ 
+// When data can be transmitted, transmit the next item in the transmit
+// buffer
+ISR(USART_UDRE_vect) {
+    if (!TXBufferEmpty()) {
+        // Send the next byte if we have one to send
+        UDR0 = (byte) TXRingRemove();
+    } else {
+        // Turn off the data register empty interrupt if
+        // we have nothing left to send
+        UCSR0B &= ~_BV(UDRIE0);
+    }
+}
+
+
+// Ring buffer access functions
+// http://www.downtowndougbrown.com/2014/08/microcontrollers-uarts/
 bool RXBufferEmpty(void) {
     // If the head and tail are equal, the buffer is empty.
     return (RXRingHead == RXRingTail);
@@ -163,21 +220,5 @@ static int RXRingRemove(void) {
         return c;
     } else {
         return -1;
-    }
-}
- 
-ISR(USART_RX_vect) {
-    byte data = UDR0;
-    RXRingAdd(data);
-}
- 
-ISR(USART_UDRE_vect) {
-    if (!TXBufferEmpty()) {
-        // Send the next byte if we have one to send
-        UDR0 = (byte) TXRingRemove();
-    } else {
-        // Turn off the data register empty interrupt if
-        // we have nothing left to send
-        UCSR0B &= ~_BV(UDRIE0);
     }
 }
