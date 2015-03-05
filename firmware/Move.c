@@ -62,7 +62,7 @@ void MoveInit(void) {
 	RingHead = 0;
 	RingTail = 0;
 
-	// Disable timer til we need it alter
+	// Disable timer til we need it later
 	TIMSK2 &= ~_BV(TOIE2);
 	// Configure timer in normal mode (no CTC)
 	TCCR2A &= ~(_BV(WGM21) | _BV(WGM20));
@@ -114,21 +114,26 @@ void PrecalculateMovement(void) {
 // via a timer
 void MoveStep(void) {
 	// Increment each stepper in the direction required, if it needs to be moved
+	// Sets direction pin, pulls step pin low, waits 2us, then pulls step pin high
 	if (CurrentX != TargetX) {
-		if (XDir) { MotorXStep(true); CurrentX++; } else { MotorXStep(false); CurrentX--; }
+		MotorXSetDirection(XDir);
+		MotorXSetStep();
+		if (XDir) { CurrentX++; } else { CurrentX--; }
 	}
 	if (CurrentY != TargetY) {
-		if (YDir) { MotorYStep(true); CurrentY++; } else { MotorYStep(false); CurrentY--; }
+		MotorYSetDirection(YDir);
+		MotorYSetStep();
+		if (YDir) { CurrentY++; } else { CurrentY--; }
 	}
-	if (CurrentTheta != TargetTheta) {
-		if (ThetaDir) { MotorThetaStep(true); CurrentTheta++; } else { MotorThetaStep(false); CurrentTheta--; }
-	}
-	if (CurrentPhi != TargetPhi) {
-		if (PhiDir) { MotorPhiStep(true); CurrentPhi++; } else { MotorPhiStep(false); CurrentPhi--; }
-	}
+	MotorStep();
+
+	// TODO: Make theta, phi motors move
+	if (CurrentTheta != TargetTheta) { CurrentTheta++; }
+	if (CurrentPhi != TargetPhi) { CurrentPhi++; }
 
 	if ((CurrentX != TargetX) || (CurrentY != TargetY) || (CurrentTheta != TargetTheta) || (CurrentPhi != TargetPhi)) {
-		// If we still have movements to make, enable timer
+		// TODO: Change this based on a desired velocity based on Bresenham
+		// IMPORTANT: Things will get weird if this delay is less than the delay used in Motor.c of ~2us
 		TCNT2 = 0;
 		TIMSK2 |= _BV(TOIE2);
 	} else {

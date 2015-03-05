@@ -3,7 +3,8 @@
 void MotorInit(void);
 void MotorStart(void);
 void MotorStop(void);
-void MotorXStep(bool dir);
-void MotorYStep(bool dir);
-void MotorThetaStep(bool dir);
-void MotorPhiStep(bool dir);
+void MotorXSetDirection(bool dir);
+void MotorYSetDirection(bool dir);
+void MotorXSetStep(void);
+void MotorYSetStep(void);
+void MotorStep(void);
