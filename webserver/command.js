@@ -8,11 +8,18 @@ function WebCommand(transmitSlug, transmitCommand, receiveSlug, receiveCommand) 
 // When the slug is received over the socket, send whatever data
 // needs to be sent to the Arduino
 WebCommand.prototype.bindTransmit = function(socket, sp, callback) {
+	this.socket = socket;
+	this.sp = sp;
 	if (typeof(callback) === 'undefined') { callback = function(x) { return x; } }
 	if (typeof(this.transmitCommand != 'undefined')) {
 		socket.on(this.transmitSlug, function(data) {
 			callback(this.transmitCommand.transmit(sp, data));
 		}.bind(this));
+	}
+}
+WebCommand.prototype.transmit = function(data) {
+	if (typeof(this.transmitCommand != 'undefined')) {
+		this.transmitCommand.transmit(this.sp, data);
 	}
 }
 
@@ -45,3 +52,4 @@ stop = new WebCommand('stop', TransmitCommand.stop);
 abort = new WebCommand('abort', TransmitCommand.abort);
 
 exports.commands = [moveAbs, moveRel, currentPosition, targetPosition, homeX, homeY, start, stop, abort];
+exports.currentPosition = currentPosition;

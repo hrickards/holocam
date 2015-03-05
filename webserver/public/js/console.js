@@ -79,6 +79,8 @@ window.Console = {
 			'class': 'line ' + textClass,
 			'text': line
 		}).appendTo("#console");
+		// Scroll to bottom
+		$("html, body").scrollTop($(document).height());
 	},
 
 	// Parse command from raw string

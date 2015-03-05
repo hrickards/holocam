@@ -36,6 +36,12 @@ serialPort.on("open", function() {
 		commands.forEach(function(command) {
 			command.bindTransmit(socket, serialPort);
 		});
+
+		// Repeatedly request the current position
+		// TODO: Is repeated polling really the best way to do this
+		setInterval(function() {
+			require('./command.js').currentPosition.transmit();
+		}, 100);
 	});
 
 	// When we receive data from the serial port

@@ -141,13 +141,13 @@ window.Canvas = {
 	jumpYawRight: function() { this.relativeMotion(0, 0, 0, +this.rotationStep); },
 	relativeMotion: function(x, y, theta, phi) {
 		this.moveObjectRelative(this.vplatform, x, y, theta, phi);
+		this.socket.emit('moveRel', {x:x, y:y, theta:theta, phi:phi});
 	},
 	moveObjectRelative: function(object, x, y, theta, phi) {
 		object.position.x += x;
 		object.position.y += y;
 		object.rotation.x += theta * Math.PI/180;
 		object.rotation.y += phi * Math.PI/180;
-		this.socket.emit('moveRel', {x:x, y:y, theta:theta, phi:phi});
 	},
 	moveObjectAbsolute: function(object, x, y, theta, phi) {
 		object.position.x = x;
@@ -162,14 +162,16 @@ window.Canvas = {
 		this.socket = io();
 
 		// Bind to all incoming commands
-		this.socket.on("moved", function(data) {
-			this.moveObjectAbsolute(this.platform, data.x, data.y, data.theta, data.phi);
-		}.bind(this));
-		// When we've explicitly requested a position update, move both virtual and real
 		this.socket.on("positionUpdate", function(data) {
 			this.moveObjectAbsolute(this.platform, data.x, data.y, data.theta, data.phi);
+		}.bind(this));
+		// When we've explicitly requested a position update, move target
+		this.socket.on("targetUpdate", function(data) {
 			this.moveObjectAbsolute(this.vplatform, data.x, data.y, data.theta, data.phi);
 		}.bind(this));
+
+		// Initial position
+		this.socket.emit('targetPosition');
 	}
 };
 
