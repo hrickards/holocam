@@ -109,7 +109,7 @@ void CommandSpin(void) {
 				MoveGetCurrentPosition(&xPos, &yPos, &thetaPos, &phiPos); 
 
 				// Output
-				UARTWriteByte(TARGET_RETURN);
+				UARTWriteByte(POS_RETURN);
 				UARTWritePosition(xPos);
 				UARTWritePosition(yPos);
 				UARTWritePosition(thetaPos);

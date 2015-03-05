@@ -20,8 +20,13 @@ WebCommand.prototype.bindTransmit = function(socket, sp, callback) {
 // something over the socket
 WebCommand.prototype.receive = function(data, sp) {
 	if (typeof(this.receiveCommand) != 'undefined') {
-		var output = this.receiveCommand.receiveSerialLine(data);
-		return output;
+		try {
+			var output = this.receiveCommand.receiveSerialLine(data);
+			return output;
+		} catch(err) {
+			console.log(err);
+			return null;
+		}
 	}
 }
 

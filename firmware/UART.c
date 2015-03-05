@@ -10,8 +10,8 @@
 #include "UART.h"
 
 // fosc = 16MHz in an Arduino board, so choosing 250k gives a good comprimise
-// between error and speed (see p189 of ATMega 328 datasheet):w
-#define BAUD	9600
+// between error and speed (see p189 of ATMega 328 datasheet)
+#define BAUD	250000
 // Calculates UBRRL_VALUE, UBRRH_VALUE and USE_2X for us from BAUD
 #include <util/setbaud.h>
 
@@ -56,11 +56,11 @@ void UARTInit(void) {
 #endif
 
 	// Set frame format
-	// Parity disabled (00), so don't set UPM00 or UPM01
+	// Odd parity bit enabled (11), so set UPM00 and UPM01
 	// 1 stop bit, so don't set USBS0
 	// Synchronous (00, so don't set UMSEL00 or UMSEL01
 	// 8-bit data (011 -> 8 bits), so set UCSZ00 and UCSZ01, but not UCSZ02
-	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
+	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00) | _BV(UPM00) | _BV(UPM01);
 
 	// Enable RX and TX
 	UCSR0B = _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0);

@@ -22,7 +22,7 @@ var util = require("util");
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 // Data returned as raw hex characters, with each line split by a newline (0x0D)
-var serialPort = new SerialPort("/dev/tty.usbmodem1421", {baudrate: 9600, parser: serialport.parsers.readline("0d", "hex")});
+var serialPort = new SerialPort("/dev/tty.usbmodem1421", {baudrate: 250000, parity: 'odd', parser: serialport.parsers.readline("0d", "hex")});
 
 serialPort.on("open", function() {
 	log("serial open");
