@@ -36,3 +36,4 @@ Two (bidirectional) core communication channels:
 3/4: 11:45-12:15
 3/5: 2:30-4
 3/7: 4.30-6.00, 7.00-12.30
+3/8: 4.00-6.30
