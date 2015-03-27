@@ -69,3 +69,9 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 end
+
+# Mock OmniAuth twitter authentication
+OmniAuth.config.test_mode = true
+OmniAuth.config.add_mock(:twitter, { uid: SecureRandom.uuid, nickname: Faker::Internet.user_name })
+OmniAuth.config.add_mock(:facebook, { uid: SecureRandom.uuid, nickname: Faker::Internet.user_name })
+OmniAuth.config.add_mock(:google, { uid: SecureRandom.uuid, nickname: Faker::Internet.user_name })

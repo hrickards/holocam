@@ -1,4 +1,8 @@
 <div id="session">
+	<%= link_to t('button.twitter_sign_in'), oauth_signin_path(:twitter), id: "twitter" %>
+	<%= link_to t('button.facebook_sign_in'), oauth_signin_path(:facebook), id: "facebook" %>
+	<%= link_to t('button.google_sign_in'), oauth_signin_path(:google_oauth2), id: "google" %>
+
 	<%= form_tag sessions_path, id: "traditional_authentication", method: "post" do %>
 		<div>
 			<label for="email"><%= t 'label.email' %></label>: <input type="text" name="email" id="email">

@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 	# Sessions controllers
   get 'signin' => 'sessions#new'
   get 'signup' => 'sessions#new'
-  get 'sessions/:provider/callback' => 'sessions#create_from_oauth'
+  get 'auth/:provider/callback' => 'sessions#create_from_oauth'
   post 'sessions' => 'sessions#create_from_traditional'
   delete 'signout' => 'sessions#destroy'
 
