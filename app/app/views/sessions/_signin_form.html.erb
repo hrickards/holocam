@@ -1,0 +1,14 @@
+<div id="session">
+	<%= form_tag sessions_path, id: "traditional_authentication", method: "post" do %>
+		<div>
+			<label for="email"><%= t 'label.email' %></label>: <input type="text" name="email" id="email">
+		</div>
+		<div>
+			<label for="password"><%= t 'label.password' %></label>: <input type="password" name="password" id="password">
+		</div>
+		<div>
+			<input type="submit" value="<%= t 'button.sign_up' %>">
+			<input type="submit" value="<%= t 'button.sign_in' %>">
+		</div>
+	<% end %>
+</div>

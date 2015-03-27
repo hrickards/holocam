@@ -1,16 +1,29 @@
 en:
   error:
-    already_logged_in: "You're already logged in!"
-    already_logged_out: "You're already logged out!"
+    already_signed_in: "You're already signed in!"
+    already_signed_out: "You're already signed out!"
     invalid_username_password: "Invalid username/password combination!"
-    must_be_logged_in: "You must be logged in to do that!"
+    must_be_signed_in: "You must be signed in to do that!"
 
     not_in_queue: "You're not in the queue already!"
 
   notice:
-    logged_out: "Successfully logged out!"
-    logged_in: "Successfully logged in!"
+    signed_out: "Successfully signed out!"
+    signed_in: "Successfully signed in!"
+    signed_up: "Successfully signed up!"
     oauth_error: "Authentication error! Please try again."
     
     added_to_queue: "Successfully added you to the timeslot queue!"
     removed_from_queue: "Successfully removed you from the timeslot queue!"
+
+  link:
+    sign_in_up: "Sign in/up"
+    sign_out: "Sign out"
+
+  button:
+    sign_in: "Sign in"
+    sign_up: "Sign up"
+
+  label:
+    email: "Email"
+    password: "Password"

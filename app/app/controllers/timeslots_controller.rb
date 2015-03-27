@@ -9,7 +9,7 @@ class TimeslotsController < ApplicationController
 			Timeslot.add_to_queue current_user
 			redirect_to root_url, notice: I18n.t('notice.added_to_queue')
 		else
-			redirect_to root_url, alert: I18n.t('error.must_be_logged_in')
+			redirect_to root_url, alert: I18n.t('error.must_be_signed_in')
 		end
   end
 
@@ -23,7 +23,7 @@ class TimeslotsController < ApplicationController
 				redirect_to root_url, alert: I18n.t('error.not_in_queue')
 			end
 		else
-			redirect_to root_url, alert: I18n.t('error.must_be_logged_in')
+			redirect_to root_url, alert: I18n.t('error.must_be_signed_in')
 		end
   end
 end

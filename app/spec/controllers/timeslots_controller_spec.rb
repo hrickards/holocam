@@ -28,7 +28,7 @@ RSpec.describe TimeslotsController, type: :controller do
 			it "redirects to main page with error" do
 				post :create
 				expect(response).to redirect_to '/'
-				expect(flash[:alert]).to match(I18n.t('error.must_be_logged_in'))
+				expect(flash[:alert]).to match(I18n.t('error.must_be_signed_in'))
 			end
 
 			it "doesn't add user to queue" do
@@ -71,7 +71,7 @@ RSpec.describe TimeslotsController, type: :controller do
 			it "redirects to main page with error" do
 				delete :destroy
 				expect(response).to redirect_to '/'
-				expect(flash[:alert]).to match(I18n.t('error.must_be_logged_in'))
+				expect(flash[:alert]).to match(I18n.t('error.must_be_signed_in'))
 			end
 
 			it "doesn't change queue" do

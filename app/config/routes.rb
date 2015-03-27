@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get 'signin' => 'sessions#new'
   get 'signup' => 'sessions#new'
   get 'sessions/:provider/callback' => 'sessions#create_from_oauth'
-  post 'sessions/create' => 'sessions#create_from_traditional'
+  post 'sessions' => 'sessions#create_from_traditional'
   delete 'signout' => 'sessions#destroy'
 
 	# Timeslots controllers

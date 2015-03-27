@@ -8,7 +8,24 @@
 </head>
 <body>
 
-<%= yield %>
+<div id="container">
+	<%# Flash messages %>
+  <% if flash[:alert] %>
+    <p class="flash-error"><%= flash[:alert] %></p>
+  <% end %>
+  <% if flash[:notice] %>
+    <p class="flash-notice"><%= flash[:notice] %></p>
+  <% end %>
+
+	<%# Authentication links %>
+	<% if signed_in? %>
+		<%= link_to t('link.sign_out'), signout_path, method: :delete %>
+	<% else %>
+		<%= link_to t('link.sign_in_up'), signin_path %>
+	<% end %>
+
+	<%= yield %>
+</div>
 
 </body>
 </html>

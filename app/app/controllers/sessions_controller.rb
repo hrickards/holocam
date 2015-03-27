@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
 	# GET /signup
   def new
 		if signed_in?
-			redirect_to root_url, alert: I18n.t('error.already_logged_in')
+			redirect_to root_url, alert: I18n.t('error.already_signed_in')
 		else
 			render "new"
 		end
@@ -11,12 +11,12 @@ class SessionsController < ApplicationController
 
 	# GET /sessions/:provider/callback
   def create_from_oauth
-		return redirect_to(root_url, alert: I18n.t('error.already_logged_in')) if signed_in?
+		return redirect_to(root_url, alert: I18n.t('error.already_signed_in')) if signed_in?
 
 		user = User.authenticate_from_oauth request.env['omniauth.auth']
 		if user.present?
 			sign_in user
-			redirect_to root_url, notice: I18n.t('notice.logged_in')
+			redirect_to root_url, notice: I18n.t('notice.signed_in')
 		else
 			redirect_to root_url, alert: I18n.t('error.oauth_error')
 		end
@@ -24,12 +24,18 @@ class SessionsController < ApplicationController
 
 	# POST /sessions
   def create_from_traditional
-		return redirect_to(root_url, alert: I18n.t('error.already_logged_in')) if signed_in?
+		return redirect_to(root_url, alert: I18n.t('error.already_signed_in')) if signed_in?
 
 		user = User.authenticate_from_traditional params[:email], params[:password]
 		if user.present?
 			sign_in user
-			redirect_to root_url, notice: I18n.t('notice.logged_in')
+			# Check if user was just created
+			# TODO: Make this a little less hackish
+			if user.created_at >= 0.01.second.ago
+				redirect_to root_url, notice: I18n.t('notice.signed_up')
+			else
+				redirect_to root_url, notice: I18n.t('notice.signed_in')
+			end
 		else
 			redirect_to root_url, alert: I18n.t('error.invalid_username_password')
 		end
@@ -39,9 +45,9 @@ class SessionsController < ApplicationController
   def destroy
 		if signed_in?
 			sign_out
-			redirect_to root_url, notice: I18n.t('notice.logged_out')
+			redirect_to root_url, notice: I18n.t('notice.signed_out')
 		else
-			redirect_to root_url, alert: I18n.t('error.already_logged_out')
+			redirect_to root_url, alert: I18n.t('error.already_signed_out')
 		end
   end
 

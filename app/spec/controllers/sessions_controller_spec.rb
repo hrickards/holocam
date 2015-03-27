@@ -11,7 +11,7 @@ RSpec.describe SessionsController, type: :controller do
 				get :new
 
 				expect(response).to redirect_to '/'
-				expect(flash[:alert]).to match(I18n.t('error.already_logged_in'))
+				expect(flash[:alert]).to match(I18n.t('error.already_signed_in'))
 				expect(controller.signed_in?).to eq(true)
 				expect(controller.current_user).to eq(@user)
 			end
@@ -34,7 +34,7 @@ RSpec.describe SessionsController, type: :controller do
 				get :create_from_oauth, provider: 'facebook'
 
 				expect(response).to redirect_to '/'
-				expect(flash[:alert]).to match(I18n.t('error.already_logged_in'))
+				expect(flash[:alert]).to match(I18n.t('error.already_signed_in'))
 				expect(controller.signed_in?).to eq(true)
 				expect(controller.current_user).to eq(@user)
 			end
@@ -47,7 +47,7 @@ RSpec.describe SessionsController, type: :controller do
 					get :create_from_oauth, provider: 'facebook'
 
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.logged_in'))
+					expect(flash[:notice]).to match(I18n.t('notice.signed_in'))
 					expect(controller.signed_in?).to eq(true)
 				end
 			end
@@ -73,7 +73,7 @@ RSpec.describe SessionsController, type: :controller do
 				post :create_from_traditional, {email: credentials[:uid], password: credentials[:password]}
 
 				expect(response).to redirect_to '/'
-				expect(flash[:alert]).to match(I18n.t('error.already_logged_in'))
+				expect(flash[:alert]).to match(I18n.t('error.already_signed_in'))
 				expect(controller.signed_in?).to eq(true)
 				expect(controller.current_user).to eq(@user)
 			end
@@ -86,7 +86,7 @@ RSpec.describe SessionsController, type: :controller do
 					post :create_from_traditional, {email: credentials[:uid], password: credentials[:password]}
 
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.logged_in'))
+					expect(flash[:notice]).to match(I18n.t('notice.signed_in'))
 					expect(controller.signed_in?).to eq(true)
 					expect(controller.current_user).to eq(@user)
 				end
@@ -98,7 +98,7 @@ RSpec.describe SessionsController, type: :controller do
 					post :create_from_traditional, {email: credentials[:uid], password: credentials[:password]}
 
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.logged_in'))
+					expect(flash[:notice]).to match(I18n.t('notice.signed_up'))
 					expect(controller.signed_in?).to eq(true)
 					expect(controller.current_user.uid).to eq(@user.uid)
 					# Expect @user to already be created
@@ -126,7 +126,7 @@ RSpec.describe SessionsController, type: :controller do
 				delete :destroy
 
 				expect(response).to redirect_to '/'
-				expect(flash[:notice]).to match(I18n.t('notice.logged_out'))
+				expect(flash[:notice]).to match(I18n.t('notice.signed_out'))
 				expect(controller.signed_in?).to eq(false)
 			end
 		end
@@ -136,7 +136,7 @@ RSpec.describe SessionsController, type: :controller do
 				delete :destroy
 
 				expect(response).to redirect_to '/'
-				expect(flash[:alert]).to match(I18n.t('error.already_logged_out'))
+				expect(flash[:alert]).to match(I18n.t('error.already_signed_out'))
 				expect(controller.signed_in?).to eq(false)
 			end
 		end
