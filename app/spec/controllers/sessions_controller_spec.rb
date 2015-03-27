@@ -1,12 +1,9 @@
 require 'rails_helper'
+require_relative '../support/authentication_helpers'
 
 RSpec.describe SessionsController, type: :controller do
-	# Sign in as a new user
-	def sign_in
-		@user = FactoryGirl.create :user
-		session[:user_id] = @user.id
-	end
-
+  include AuthenticationHelpers
+	
   describe "GET #new" do
 		context "when user is logged in" do
 			it "redirects to main page with alert" do

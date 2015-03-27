@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   post 'sessions/create' => 'sessions#create_from_traditional'
   delete 'signout' => 'sessions#destroy'
 
+	# Timeslots controllers
+	get '/queue' => 'timeslots#index'
+	post '/queue' => 'timeslots#create'
+	delete '/queue' => 'timeslots#destroy'
+
 	# Static pages
 	root 'static#index'
 

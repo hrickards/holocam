@@ -218,7 +218,7 @@ RSpec.describe Timeslot, type: :model do
 	end
 
 	describe "self#add_to_queue" do
-		let(:user) { FactoryGirl.build(:user) }
+		let(:user) { FactoryGirl.create(:user) }
 
 		context "when timeslots are present" do
 			let(:num_timeslots) { rand(0..50) }
@@ -237,6 +237,13 @@ RSpec.describe Timeslot, type: :model do
 
 			it "adds a timeslot starting at the end of the last timeslot" do
 				expect(Timeslot.add_to_queue(user).start_time).to be_within((0.5).seconds).of(@max_last_time)
+			end
+
+			context "when some of timeslots present already are user's" do
+				it "should not add a timeslot" do
+					Timeslot.add_to_queue(user)
+					expect { Timeslot.add_to_queue(user) }.to_not change(Timeslot, :count)
+				end
 			end
 		end
 
@@ -273,4 +280,155 @@ RSpec.describe Timeslot, type: :model do
 			end
 		end
 	end
+
+	describe "self#find_in_queue" do
+		let(:user) { FactoryGirl.create(:user) }
+		context "when nil user passed" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+				Timeslot.add_to_queue(user)
+			end
+
+			it "returns nil" do
+				expect(Timeslot.find_in_queue(nil)).to eql(nil)
+			end
+		end
+
+		context "when user in queue" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+				@timeslot = Timeslot.add_to_queue(user)
+			end
+
+			it "returns the timeslot" do
+				expect(Timeslot.find_in_queue(user)).to eql(@timeslot)
+			end
+		end
+
+		context "when user used to be in queue" do
+			before(:each) do 
+				timeslot = FactoryGirl.build :timeslot, start_time: 1.minute.ago, end_time: 3.minutes.ago, user: user
+				timeslot.save validate: false
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+			end
+
+			it "returns nil" do
+				expect(Timeslot.find_in_queue(user)).to eql(nil)
+			end
+		end
+
+		context "when user was never in queue" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+			end
+
+			it "returns nil" do
+				expect(Timeslot.find_in_queue(user)).to eql(nil)
+			end
+		end
+	end
+
+	describe "self#in_queue?" do
+		let(:user) { FactoryGirl.create(:user) }
+		context "when nil user passed" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+				Timeslot.add_to_queue(user)
+			end
+
+			it "returns nil" do
+				expect(Timeslot.in_queue?(nil)).to eql(nil)
+			end
+		end
+
+		context "when user in queue" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+				Timeslot.add_to_queue(user)
+			end
+
+			it "returns true" do
+				expect(Timeslot.in_queue?(user)).to eql(true)
+			end
+		end
+
+		context "when user used to be in queue" do
+			before(:each) do 
+				timeslot = FactoryGirl.build :timeslot, start_time: 1.minute.ago, end_time: 3.minutes.ago, user: user
+				timeslot.save validate: false
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+			end
+
+			it "returns false" do
+				expect(Timeslot.in_queue?(user)).to eql(false)
+			end
+		end
+
+		context "when user was never in queue" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+			end
+
+			it "returns false" do
+				expect(Timeslot.in_queue?(user)).to eql(false)
+			end
+		end
+	end
+
+	describe "self#remove_from_queue" do
+		let(:user) { FactoryGirl.create(:user) }
+		context "when nil user passed" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+				Timeslot.add_to_queue(user)
+			end
+
+			it "returns nil" do
+				expect(Timeslot.remove_from_queue(nil)).to eql(nil)
+			end
+		end
+
+		context "when user in queue" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+				@timeslot = Timeslot.add_to_queue(user)
+			end
+
+			it "returns the timeslot" do
+				expect(Timeslot.remove_from_queue(user)).to eql(@timeslot)
+			end
+			it "removes the timeslot from the queue" do
+				expect { Timeslot.remove_from_queue(user) }.to change(Timeslot, :count).by(-1)
+			end
+		end
+
+		context "when user used to be in queue" do
+			before(:each) do 
+				timeslot = FactoryGirl.build :timeslot, start_time: 1.minute.ago, end_time: 3.minutes.ago, user: user
+				timeslot.save validate: false
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+			end
+
+			it "returns nil" do
+				expect(Timeslot.remove_from_queue(nil)).to eql(nil)
+			end
+			it "doesn't change the queue" do
+				expect { Timeslot.remove_from_queue(user) }.to_not change(Timeslot, :count)
+			end
+		end
+
+		context "when user was never in queue" do
+			before(:each) do 
+				FactoryGirl.create :timeslot, start_time: 1.minute.from_now, end_time: 3.minutes.from_now
+			end
+
+			it "returns nil" do
+				expect(Timeslot.remove_from_queue(nil)).to eql(nil)
+			end
+			it "doesn't change the queue" do
+				expect { Timeslot.remove_from_queue(user) }.to_not change(Timeslot, :count)
+			end
+		end
+	end
+
 end

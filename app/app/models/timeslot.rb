@@ -48,9 +48,11 @@ class Timeslot < ActiveRecord::Base
 		return (possible_timeslot.present? and possible_timeslot.start_time < Time.now + EPSILON) ? possible_timeslot : nil
 	end
 
-	# Create a new timeslot starting as soon as possible
+	# Create a new timeslot starting as soon as possible, provided the user doesn't already have a timeslot in the future
 	# TODO: Calculate the optimum length of the timeslot, rather than hardcoding it
 	def self.add_to_queue(user)
+		return nil if in_queue?(user)
+
 		last_timeslot = Timeslot.last
 		if last_timeslot.present? and last_timeslot.end_time > (Time.now - EPSILON)
 			start_time = last_timeslot.end_time
@@ -60,21 +62,44 @@ class Timeslot < ActiveRecord::Base
 		return Timeslot.create! user: user, start_time: start_time, end_time: start_time + STANDARD_LENGTH
 	end
 
-	# Check that a given timeslot is 'in the future'
+	# Find the user's timeslot (in the future) in the queue
+	def self.find_in_queue(user)
+		return nil if user.nil?
+
+		threshold_time = Time.now - EPSILON
+		return Timeslot.where(user_id: user.id).find { |timeslot, index| timeslot.start_time > threshold_time }
+	end
+
+	# Does the user already have a timeslot in the future?
+	def self.in_queue?(user)
+		return nil if user.nil?
+		find_in_queue(user).present?
+	end
+
+	# Remove the user's future timeslot from the queue, if one exists
+	def self.remove_from_queue(user)
+		if in_queue?(user)
+			find_in_queue(user).destroy
+		else
+			nil
+		end
+	end
+
+	# VALIDATON: Check that a given timeslot is 'in the future'
 	def check_in_future
 		if start_time.present? and start_time < (Time.now - EPSILON)
 			errors.add(:start_time, "can't be in the past")
 		end
 	end
 
-	# Check that the timeslot ends after it starts
+	# VALIDATON: Check that the timeslot ends after it starts
 	def check_valid_time_interval
 		if start_time.present? and end_time.present? and end_time < start_time + EPSILON
 			errors.add(:end_time, "can't be before start_time")
 		end
 	end
 
-	# Check that the new/updated timeslot 'fits in' to the order correctly, that is:
+	# VALIDATON: Check that the new/updated timeslot 'fits in' to the order correctly, that is:
 	#  - start time >= prev end time
 	#  - end time <= next start time
 	#  provided both of those are defined
@@ -99,7 +124,7 @@ class Timeslot < ActiveRecord::Base
 		end
 	end
 
-	# Do the same thing when we're adding a new record, only here our job is much
+	# VALIDATON: Do the same thing when we're adding a new record, only here our job is much
 	# easier: we just need to compare to the last Timeslot
 	def check_monotonic_create
 		prev_timeslot = Timeslot.last
