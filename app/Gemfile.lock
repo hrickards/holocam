@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/vitormil/faker.git
+  revision: 13c4bc61e4c74b105ef1199baac7da10191df681
+  specs:
+    faker (1.4.3)
+      i18n (~> 0.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -52,8 +59,6 @@ GEM
     factory_girl_rails (4.5.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
-    faker (1.4.3)
-      i18n (~> 0.5)
     hashie (3.4.0)
     hike (1.2.3)
     i18n (0.7.0)
@@ -155,7 +160,7 @@ DEPENDENCIES
   coffee-rails (~> 4.0.0)
   database_cleaner
   factory_girl_rails
-  faker
+  faker!
   jbuilder (~> 2.0)
   jquery-rails
   omniauth

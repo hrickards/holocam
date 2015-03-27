@@ -52,3 +52,11 @@ FactoryGirl.define do
 		end
 	end
 end
+
+FactoryGirl.define do
+  factory :timeslot do
+    user FactoryGirl.build :user
+		start_time 1.minute.from_now
+		end_time 2.minutes.from_now
+  end
+end

@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
 	validates :provider, presence: true
 	validates :uid, presence: true, uniqueness: {scope: :provider}
+	has_many :timeslots
 
 	# Optional password authentication
 	# In that case, provider is "traditional" and uid is email
@@ -8,7 +9,7 @@ class User < ActiveRecord::Base
 	attr_accessor :password
 	before_save :encrypt_password
 	# The uid/provider uniqueness ensures uniqueness of email addresses
-
+	
 	# OAuth vs. traditional
 	def traditional?
 		provider == "traditional"
