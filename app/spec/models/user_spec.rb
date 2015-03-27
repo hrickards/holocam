@@ -25,8 +25,9 @@ RSpec.describe User, type: :model do
 		end
 
 		it "doesn't allow duplicate users" do
-			User.authenticate_from_oauth(facebook_hash)
+			user = User.authenticate_from_oauth(facebook_hash)
 			expect { User.authenticate_from_oauth(facebook_hash) }.to_not change(User, :count)
+			expect(User.authenticate_from_oauth(facebook_hash)).to eql(user)
 		end
 
 		it "allowers users with the same uid across different providers" do
@@ -35,8 +36,10 @@ RSpec.describe User, type: :model do
 		end
 
 		it "rejects invalid hashes" do
-			expect { User.authenticate_from_oauth(no_provider_hash) }.to raise_error
-			expect { User.authenticate_from_oauth(no_uid_hash) }.to raise_error
+			expect(User.authenticate_from_oauth(nil)).to eql(nil)
+			expect(User.authenticate_from_oauth({})).to eql(nil)
+			expect(User.authenticate_from_oauth(no_provider_hash)).to eql(nil)
+			expect(User.authenticate_from_oauth(no_uid_hash)).to eql(nil)
 		end
 
 		it "extracts the phone number if present" do
@@ -58,10 +61,12 @@ RSpec.describe User, type: :model do
 
 		it "requires a password" do
 			expect { User.authenticate_from_traditional(email, "") }.to_not change(User, :count)
+			expect(User.authenticate_from_traditional(email, "")).to eql(nil)
 		end
 		
 		it "requires an email address" do
 			expect { User.authenticate_from_traditional("", password) }.to_not change(User, :count)
+			expect(User.authenticate_from_traditional("", password)).to eql(nil)
 		end
 
 		it "finds an old user with the correct password" do
@@ -71,12 +76,13 @@ RSpec.describe User, type: :model do
 
 		it "doesn't find an old user with the wrong password" do
 			new_user = User.authenticate_from_traditional(email, password)
-			expect(User.authenticate_from_traditional(email, password + "a")).to eql(false)
+			expect(User.authenticate_from_traditional(email, password + "a")).to eql(nil)
 		end
 
 		it "doesn't allow duplicate users" do
-			User.authenticate_from_traditional(email, password)
+			user = User.authenticate_from_traditional(email, password)
 			expect { User.authenticate_from_traditional(email, password) }.to_not change(User, :count)
+			expect(User.authenticate_from_traditional(email, password)).to eql(user)
 		end
 
 		it "should know it's type" do

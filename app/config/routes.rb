@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+	# Sessions controllers
+  get 'signin' => 'sessions#new'
+  get 'signup' => 'sessions#new'
+  get 'sessions/:provider/callback' => 'sessions#create_from_oauth'
+  post 'sessions/create' => 'sessions#create_from_traditional'
+  delete 'signout' => 'sessions#destroy'
+
+	# Static pages
+	root 'static#index'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

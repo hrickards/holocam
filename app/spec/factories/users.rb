@@ -3,6 +3,12 @@ FactoryGirl.define do
 		provider "testprovider"
 		uid Faker::Internet.password(8)
 		phone Faker::PhoneNumber.cell_phone
+
+		factory :traditional_user do
+			provider "traditional"
+			uid Faker::Internet.email
+			password Faker::Internet.password
+		end
   end
 
 	factory :facebook_hash, class: OmniAuth::AuthHash do

@@ -32,8 +32,11 @@ class User < ActiveRecord::Base
 	# Return an existing user if present, otherwise create a new one
 	# Also adds the phone number if present
 	def self.authenticate_from_oauth(auth)
+		return nil if auth.blank?
+
 		# Use uid and provider fields in OmniAuth hash
     user = find_or_create_by(uid: auth.uid, provider: auth.provider)
+		return nil unless user.valid?
 
 		# Update phone number if we have one now
 		user.update! phone: auth.info.phone if user.phone.blank? and (auth.info.present? and auth.info.phone.present?)
@@ -52,7 +55,7 @@ class User < ActiveRecord::Base
 			user
 		elsif user
 			# Incorrect password given
-			false
+			nil
 		else
 			# No user exists yet
 			# Validate presence of password and email
