@@ -1,8 +1,8 @@
 # Movement
-X: Left/right provided by X stepper axis
-Y: Up/down provided by Y stepper axis
-Theta: Pitch/tilt (up/down)
-Phi: Yaw/pan (left/right)
+ * X: Left/right provided by X stepper axis
+ * Y: Up/down provided by Y stepper axis
+ * Theta: Pitch/tilt (up/down)
+ * Phi: Yaw/pan (left/right)
 
 Don't need roll (in XY plane), or zoom (translation along Z axis).
 
@@ -30,13 +30,24 @@ Two (bidirectional) core communication channels:
 | currentPosition | ()        | control, user | (x, y, theta, phi) | returns current translational/rotational position |
 
 # Hours
-2/23: 3.40-4.30, 6.00-7.30, 9.40-12.40, 1.30-4.45
-2/27: 12.30-4
-2/28: 11:45-8:30
-3/4: 11:45-12:15
-3/5: 2:30-4
-3/7: 4.30-6.00, 7.00-12.30
-3/8: 4.00-6.30
-3/26: 8.30-6.15
-3/27: 2.45-12.00
-3/28: 12.45-3.30
+## 02/23 to 03/01 20.75h
+* Mon 02/23 (08.50h): 3.40-4.30, 6.00-7.30, 9.40-12.40, 1.30-4.45 8.58h
+* Fri 02/27 (03.50h): 12.30-4
+* Sat 02/28 (08.75h): 11:45-8:30
+
+## 03/02 to 03/08 11.5h
+* Wed 03/04 (00.50h): 11:45-12:15
+* Thu 03/05 (01.50h): 2:30-4
+* Sat 03/07 (07.00h): 4.30-6.00, 7.00-12.30
+* Sun 03/08 (02.50h): 4.00-6.30
+
+## 03/09 to 03/15
+None
+
+## 03/16 to 03/22
+None
+
+## 03/23 to 03/29
+* Thu 03/26 (09.75h): 8.30-6.15
+* Fri 03/27 (09.25h): 2.45-12.00
+* Sat 03/28: 12.45-3.30
