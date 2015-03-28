@@ -38,6 +38,9 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+# User queueing
+gem 'redis'
+
 # Authentication
 gem 'omniauth'
 gem 'omniauth-twitter'

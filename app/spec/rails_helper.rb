@@ -49,16 +49,19 @@ RSpec.configure do |config|
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 
-  config.before(:suite) do
+	config.before(:suite) do
+		# Clean any leftover data
     DatabaseCleaner.clean_with(:truncation)
   end
 
   config.before(:each) do
-    DatabaseCleaner.strategy = :transaction
+		DatabaseCleaner[:active_record].strategy = :transaction
+		DatabaseCleaner[:redis].strategy = :truncation
   end
 
   config.before(:each, :js => true) do
-    DatabaseCleaner.strategy = :truncation
+		DatabaseCleaner[:active_record].strategy = :truncation
+		DatabaseCleaner[:redis].strategy = :truncation
   end
 
   config.before(:each) do

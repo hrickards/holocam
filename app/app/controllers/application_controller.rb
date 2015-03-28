@@ -3,6 +3,13 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+	# Queue helpers
+	helper_method :queue_manager
+	def queue_manager
+		# Singleton QueueManager
+		TimedQueue::QueueManager.instance
+	end
+
 	# Authentication helpers
 	helper_method :signed_in?, :current_user
 

@@ -1,13 +1,22 @@
 FactoryGirl.define do
+	sequence :email do |n|
+		"test#{n}@email.com"
+	end
+
   factory :user do
 		provider "testprovider"
-		uid Faker::Internet.password(8)
+		uid SecureRandom.uuid
 		phone Faker::PhoneNumber.cell_phone
 
 		factory :traditional_user do
 			provider "traditional"
 			uid Faker::Internet.email
 			password Faker::Internet.password
+		end
+
+		factory :testuser do
+			provider "traditional"
+			uid { generate(:email) }
 		end
   end
 
@@ -57,12 +66,4 @@ FactoryGirl.define do
 			}
 		end
 	end
-end
-
-FactoryGirl.define do
-  factory :timeslot do
-    user FactoryGirl.build :user
-		start_time 1.minute.from_now
-		end_time 2.minutes.from_now
-  end
 end

@@ -5,8 +5,83 @@ RSpec.describe TimeslotsController, type: :controller do
   include AuthenticationHelpers
 
   describe "GET #index" do
-		it "gets a valid 200 response" do
-			expect(response.status).to eq(200)
+		def get_index
+			get :index
+			@data = JSON.parse response.body
+		end
+
+		def populate_queue
+			controller.queue_manager.add FactoryGirl.create(:testuser)
+		end
+
+		def add_current_user_to_queue
+			controller.queue_manager.add controller.current_user
+		end
+
+		context "when user logged in" do
+			context "when queue empty" do
+				it "returns the correct information" do
+					sign_in
+					get_index
+
+					expect(@data["queue_length"]).to eq(0)
+					expect(@data["queue_empty"]).to eq(true)
+					expect(@data["in_queue"]).to eq(false)
+				end
+			end
+
+			context "when queue not empty" do
+				context "when user in queue (not at start)" do
+					it "returns the correct information" do
+						sign_in
+						populate_queue
+						add_current_user_to_queue
+						get_index
+
+						expect(@data["queue_length"]).to be > 0
+						expect(@data["queue_empty"]).to eq(false)
+						expect(@data["queue_eta"]).to be > 0
+						expect(@data["in_queue"]).to eq(true)
+						expect(@data["position"]).to be > 0
+						expect(@data["eta"]).to be > 0
+					end
+				end
+
+				context "when user not in queue" do
+					it "returns the correct information" do
+						sign_in
+						populate_queue
+						get_index
+
+						expect(@data["queue_length"]).to be > 0
+						expect(@data["queue_empty"]).to eq(false)
+						expect(@data["queue_eta"]).to be > 0
+						expect(@data["in_queue"]).to eq(false)
+					end
+				end
+			end
+		end
+
+		context "when user not logged in" do
+			context "when queue empty" do
+				it "returns the correct information" do
+					get_index
+
+					expect(@data["queue_length"]).to eq(0)
+					expect(@data["queue_empty"]).to eq(true)
+				end
+			end
+
+			context "when queue not empty" do
+				it "returns the correct information" do
+					populate_queue
+					get_index
+
+					expect(@data["queue_length"]).to be > 0
+					expect(@data["queue_empty"]).to eq(false)
+					expect(@data["queue_eta"]).to be > 0
+				end
+			end
 		end
 	end
 
@@ -20,7 +95,7 @@ RSpec.describe TimeslotsController, type: :controller do
 			end
 
 			it "adds user to queue" do
-				expect { post(:create) }.to change(Timeslot, :count).by(1)
+				expect { post(:create) }.to change(controller.queue_manager, :queue_length).by(1)
 			end
 		end
 
@@ -32,7 +107,7 @@ RSpec.describe TimeslotsController, type: :controller do
 			end
 
 			it "doesn't add user to queue" do
-				expect { post(:create) }.to_not change(Timeslot, :count)
+				expect { post(:create) }.to_not change(controller.queue_manager, :queue_length)
 			end
 		end
 	end
@@ -50,7 +125,7 @@ RSpec.describe TimeslotsController, type: :controller do
 				end
 
 				it "removes user from queue" do
-					expect { delete(:destroy) }.to change(Timeslot, :count).by(-1)
+					expect { delete(:destroy) }.to change(controller.queue_manager, :queue_length).by(-1)
 				end
 			end
 
@@ -62,7 +137,7 @@ RSpec.describe TimeslotsController, type: :controller do
 				end
 
 				it "doesn't change queue" do
-					expect { delete(:destroy) }.to_not change(Timeslot, :count)
+					expect { delete(:destroy) }.to_not change(controller.queue_manager, :queue_length)
 				end
 			end
 		end
@@ -75,7 +150,7 @@ RSpec.describe TimeslotsController, type: :controller do
 			end
 
 			it "doesn't change queue" do
-				expect { delete(:destroy) }.to_not change(Timeslot, :count)
+				expect { delete(:destroy) }.to_not change(controller.queue_manager, :queue_length)
 			end
 		end
 	end
