@@ -12,8 +12,10 @@ class TimeslotsController < ApplicationController
 				@data[:in_queue] = true
 				@data[:position] = queue_manager.position current_user
 				@data[:eta] = queue_manager.eta current_user
+				@data[:current_user] = queue_manager.current_user? current_user
 			else
 				@data[:in_queue] = false
+				@data[:current_user] = false
 			end
 		end
 

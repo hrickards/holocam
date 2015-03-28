@@ -5,16 +5,29 @@
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
+
+	<%# A meta tag indicating whether or not the user is signed in %>
+	<%# Should only be used for UI rendering purposes, nothing important --- everything MUST %>
+	<%# of course be checked server-side %>
+	<meta name="signed_in" content="<%= signed_in? %>">
+
+	<%# Set correct locale for internationalisation %>
+	<script type="text/javascript">
+		I18n.defaultLocale = "<%= I18n.default_locale %>";
+		I18n.locale = "<%= I18n.locale %>";
+	</script>
 </head>
 <body>
 
 <div id="container">
 	<%# Flash messages %>
+	<%# If you change this, you should probably change the flash messages manually generated >%
+	<%# in queue.js! %>
   <% if flash[:alert] %>
-    <p class="flash-error"><%= flash[:alert] %></p>
+    <p class="flash_error"><%= flash[:alert] %></p>
   <% end %>
   <% if flash[:notice] %>
-    <p class="flash-notice"><%= flash[:notice] %></p>
+    <p class="flash_notice"><%= flash[:notice] %></p>
   <% end %>
 
 	<%# Authentication links %>

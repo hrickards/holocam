@@ -31,6 +31,24 @@ RSpec.describe TimeslotsController, type: :controller do
 			end
 
 			context "when queue not empty" do
+				context "when user at start of queue" do
+					it "returns the correct information" do
+						sign_in
+						add_current_user_to_queue
+						populate_queue
+						get_index
+
+						expect(@data["queue_length"]).to be > 0
+						expect(@data["queue_empty"]).to eq(false)
+						expect(@data["queue_eta"]).to be > 0
+						expect(@data["in_queue"]).to eq(true)
+						expect(@data["position"]).to eq(0)
+						expect(@data["eta"]).to eq(0)
+						expect(@data["current_user"]).to eq(true)
+					end
+				end
+
+
 				context "when user in queue (not at start)" do
 					it "returns the correct information" do
 						sign_in
@@ -44,6 +62,7 @@ RSpec.describe TimeslotsController, type: :controller do
 						expect(@data["in_queue"]).to eq(true)
 						expect(@data["position"]).to be > 0
 						expect(@data["eta"]).to be > 0
+						expect(@data["current_user"]).to eq(false)
 					end
 				end
 
@@ -57,6 +76,7 @@ RSpec.describe TimeslotsController, type: :controller do
 						expect(@data["queue_empty"]).to eq(false)
 						expect(@data["queue_eta"]).to be > 0
 						expect(@data["in_queue"]).to eq(false)
+						expect(@data["current_user"]).to eq(false)
 					end
 				end
 			end

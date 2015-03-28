@@ -55,4 +55,9 @@ group :development, :test do
 	gem 'faker', github: 'vitormil/faker' # Branch used for time support in Time.between
 	gem 'capybara'
   gem 'database_cleaner'
+	gem 'poltergeist'
 end
+
+# JS Templates
+gem 'handlebars_assets'
+gem "i18n-js", ">= 3.0.0.rc8" 

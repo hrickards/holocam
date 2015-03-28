@@ -13,4 +13,17 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
+
+// Means that $.ready never fires if the selected element is never present
+// Allows us to easily do page-specific JS
+//= require jquery.readyselector
+
+// Internationalisation
+//= require i18n
+//= require i18n/translations
+
+// Templating
+//= require handlebars.runtime
+//= require_tree ./templates
+
 //= require_tree .

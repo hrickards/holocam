@@ -6,6 +6,7 @@ en:
     must_be_signed_in: "You must be signed in to do that!"
 
     not_in_queue: "You're not in the queue already!"
+    queue_network_error: "Sorry, an error occurred! Trying again..."
 
   notice:
     signed_out: "Successfully signed out!"
@@ -27,3 +28,13 @@ en:
   label:
     email: "Email"
     password: "Password"
+
+  queue:
+    queue_empty: "Queue empty!"
+    queue_length_label: "Queue length"
+    queue_eta_label: "Queue ETA"
+    eta_label: "ETA"
+    position_label: "Position"
+    add_me: "Add me!"
+    remove_me: "Remove me!"
+    on_now: "You're up!"

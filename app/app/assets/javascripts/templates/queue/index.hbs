@@ -1,0 +1,24 @@
+<h3>Queue</h3>
+{{#if signed_in}}
+	{{#if queue.in_queue}}
+		{{#if queue.current_user}}
+			<div> <b>{{t 'queue.on_now'}}</b> </div>
+		{{/if}}
+
+		<div> <button type="button" id="remove_from_queue">{{t 'queue.remove_me'}}</button> </div>
+
+		{{#unless queue.current_user}}
+			<div> {{t 'queue.position_label' }}: {{queue.position}} </div>
+			<div> {{t 'queue.eta_label' }}: {{queue.eta}} </div>
+		{{/unless}}
+	{{else}}
+		<div> <button type="button" id="add_to_queue">{{t 'queue.add_me'}}</button> </div>
+	{{/if}}
+{{/if}}
+
+{{#if queue.queue_empty}}
+	{{t 'queue.queue_empty'}}
+{{else}}
+	<div> {{t 'queue.queue_length_label'}}: {{queue.queue_length}} </div>
+	<div> {{t 'queue.queue_eta_label'}}: {{queue.queue_eta}} </div>
+{{/if}}

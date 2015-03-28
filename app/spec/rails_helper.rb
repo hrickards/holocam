@@ -4,6 +4,7 @@ require 'spec_helper'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require 'capybara/rspec'
+require 'capybara/poltergeist'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -29,10 +30,8 @@ RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
-  # examples within a transaction, remove the following line or assign false
-  # instead of true.
-  config.use_transactional_fixtures = true
+	# Doesn't play well with our Redis queue
+  config.use_transactional_fixtures = false
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
@@ -78,3 +77,6 @@ OmniAuth.config.test_mode = true
 OmniAuth.config.add_mock(:twitter, { uid: SecureRandom.uuid, nickname: Faker::Internet.user_name })
 OmniAuth.config.add_mock(:facebook, { uid: SecureRandom.uuid, nickname: Faker::Internet.user_name })
 OmniAuth.config.add_mock(:google, { uid: SecureRandom.uuid, nickname: Faker::Internet.user_name })
+
+# Use phantomjs for JS testing
+Capybara.javascript_driver = :poltergeist

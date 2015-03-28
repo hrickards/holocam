@@ -17,6 +17,7 @@ FactoryGirl.define do
 		factory :testuser do
 			provider "traditional"
 			uid { generate(:email) }
+			password Faker::Internet.password
 		end
   end
 
