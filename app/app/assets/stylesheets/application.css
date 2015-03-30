@@ -11,6 +11,7 @@
  * file per style scope.
  *
  *= require bootstrap_and_overrides
+ *= require bootstrap-social
  *= require viewer/layout
  *= require_self
  */

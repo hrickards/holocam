@@ -36,10 +36,16 @@ en:
   button:
     sign_in: "Sign in"
     sign_up: "Sign up"
+    twitter_sign_in: "Sign in with Twitter"
+    facebook_sign_in: "Sign in with Facebook"
+    google_sign_in: "Sign in with Google"
 
   label:
     email: "Email"
+    email_placeholder: "Enter email"
     password: "Password"
+    password_placeholder: "Enter password"
+    sign_in_up: "Sign in or sign up!"
 
   queue:
     queue_empty: "Queue empty!"

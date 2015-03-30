@@ -62,3 +62,4 @@ gem 'i18n-js', '>= 3.0.0.rc8'
 
 # Bootstrap for layout
 gem 'bootstrap-sass'
+gem 'font-awesome-rails'
