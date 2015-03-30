@@ -1,0 +1,14 @@
+// Flowplayer containers
+.player {
+	display: block;
+	width: 100%;
+	height: 100%; // Always in a containing div we control the height of
+}
+
+// Player in sidebar
+#overall_camera {
+	$aspect_ratio: 4/3;
+	height: $sidebar_width / $aspect_ratio;
+	position: absolute;
+	bottom: 0;
+}

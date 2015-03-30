@@ -1,0 +1,7 @@
+<% if current_page? path %>
+	<li class="active">
+<% else %>
+	<li>
+<% end %>
+	<%= link_to navbar_text(title_key), path %>
+</li>

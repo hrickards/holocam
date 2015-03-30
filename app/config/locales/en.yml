@@ -1,5 +1,15 @@
 en:
+  title: "Holocam"
+
+  navbar:
+    viewer: "Viewer"
+    about: "About"
+
+  about:
+    title: "About"
+
   error:
+    error: "Error"
     already_signed_in: "You're already signed in!"
     already_signed_out: "You're already signed out!"
     invalid_username_password: "Invalid username/password combination!"
@@ -9,6 +19,7 @@ en:
     queue_network_error: "Sorry, an error occurred! Trying again..."
 
   notice:
+    notice: "Notice"
     signed_out: "Successfully signed out!"
     signed_in: "Successfully signed in!"
     signed_up: "Successfully signed up!"
@@ -18,7 +29,8 @@ en:
     removed_from_queue: "Successfully removed you from the timeslot queue!"
 
   link:
-    sign_in_up: "Sign in/up"
+    sign_in: "Sign in"
+    sign_up: "Sign up"
     sign_out: "Sign out"
 
   button:

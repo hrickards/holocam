@@ -1,3 +1,5 @@
+require "rails_helper"
+
 feature "Main page" do
 	# Sign in with traditional authentication
 	def sign_in
@@ -16,7 +18,8 @@ feature "Main page" do
 	# Check the relevant links are present when we sign in/out of the homepage
 	scenario "Signing in" do
 		visit '/'
-		expect(page).to have_link I18n.t('link.sign_in_up')
+		expect(page).to have_link I18n.t('link.sign_in')
+		expect(page).to have_link I18n.t('link.sign_up')
 
 		sign_in
 
@@ -26,6 +29,18 @@ feature "Main page" do
 		sign_out
 
 		visit '/'
-		expect(page).to have_link I18n.t('link.sign_in_up')
+		expect(page).to have_link I18n.t('link.sign_in')
+		expect(page).to have_link I18n.t('link.sign_up')
+	end
+
+	scenario 'Navigation' do
+		visit '/'
+		expect(page).to have_link I18n.t('navbar.viewer')
+		expect(page).to have_link I18n.t('navbar.about')
+
+		click_link I18n.t('navbar.about')
+		expect(page).to have_content I18n.t('about.title')
+		expect(page).to have_link I18n.t('navbar.viewer')
+		expect(page).to have_link I18n.t('navbar.about')
 	end
 end

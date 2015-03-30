@@ -12,7 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
 
 // Means that $.ready never fires if the selected element is never present
 // Allows us to easily do page-specific JS
@@ -25,5 +24,9 @@
 // Templating
 //= require handlebars.runtime
 //= require_tree ./templates
+
+
+// Bootstrap
+//= require bootstrap-sprockets
 
 //= require_tree .

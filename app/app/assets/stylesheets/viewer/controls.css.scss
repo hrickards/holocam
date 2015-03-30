@@ -1,0 +1,57 @@
+#controls {
+	$button_width: 40;
+	$button_height: 40;
+
+	$side_padding: 15px;
+	$pad_width: 125px;
+	$pad_height: 125px;
+	$gap_spacing: 20px;
+	$tiltpan_height: $button_height;
+	$tiltpan_width: $sidebar_width - 2 * $side_padding;
+
+	height: $pad_height + $tiltpan_height + $gap_spacing;
+	width: $sidebar_width;
+	padding-left: $side_padding;
+	padding-right: $side_padding;
+
+	button {
+		width: $button_width;
+		height: $button_height;
+		position: absolute;
+		font-size: 1.2em;
+	}
+
+	#pad {
+		position: relative;
+		width: $pad_width;
+		height: $pad_width;
+		margin-left: auto;
+		margin-right: auto;
+		margin-bottom: $gap_spacing/2;
+
+		#left, #right { top: $pad_height/2 - $button_height/2; }
+		#left { left: 0; }
+		#right { right: 0; }
+		
+		#up, #down { left: $pad_width/2 - $button_width/2; }
+		#up { top: 0; }
+		#down { bottom: 0; }
+	}
+
+	#tiltpan {
+		position: relative;
+		height: $tiltpan_height;
+		width: $tiltpan_width;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: $gap_spacing/2;
+
+		button { top: $tiltpan_height/2 - $button_height/2; }
+
+		#pan_left { left: 0; }
+		#pan_right { left: $tiltpan_width/3 - $button_width/3; }
+		#tilt_up { right: $tiltpan_width/3 - $button_width/3; }
+		#tilt_down { right: 0; }
+	}
+}
+

@@ -1,0 +1,39 @@
+// SIDEBAR LAYOUT
+$sidebar_width: 300px;
+#viewer {
+	float: right;
+	width: 100%;
+	margin-left: -$sidebar_width;
+}
+
+// Main content
+#camera {
+	margin-left: $sidebar_width;
+	height: 100%;
+}
+
+// Left sidebar
+#sidebar {
+	float: left;
+	width: $sidebar_width;
+	padding-top: 1em;
+}
+
+// FULLSCREEN LAYOUT
+// Global CSS so we add the full tag with JS
+html.full {
+	overflow: hidden;
+	body { overflow: hidden; }
+	#main_navbar {
+		margin-bottom: 0;
+	}
+	#main_container {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+// COMPONENTS
+@import "controls";
+@import "camera";

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
 	# Static pages
 	root 'static#index'
+	get '/about' => 'static#about'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
