@@ -8,7 +8,7 @@ feature "OAuth authentication" do
 		within("#session") do
 			click_link 'twitter'
 		end
-		expect(page).to have_content I18n.t('notice.signed_in')
+		expect(page).to have_link I18n.t('link.sign_out')
 	end
 
 	scenario "Signing in with Facebook" do
@@ -16,7 +16,7 @@ feature "OAuth authentication" do
 		within("#session") do
 			click_link 'facebook'
 		end
-		expect(page).to have_content I18n.t('notice.signed_in')
+		expect(page).to have_link I18n.t('link.sign_out')
 	end
 
 	scenario "Signing in with Google" do
@@ -24,6 +24,6 @@ feature "OAuth authentication" do
 		within("#session") do
 			click_link 'google'
 		end
-		expect(page).to have_content I18n.t('notice.signed_in')
+		expect(page).to have_link I18n.t('link.sign_out')
 	end
 end

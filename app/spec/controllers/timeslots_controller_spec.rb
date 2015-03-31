@@ -108,10 +108,9 @@ RSpec.describe TimeslotsController, type: :controller do
   describe "POST #create" do
 		context "when user logged in" do
 			before(:each) { sign_in }
-			it "redirects to main page with message" do
+			it "redirects to main page" do
 				post :create
 				expect(response).to redirect_to '/'
-				expect(flash[:notice]).to match(I18n.t('notice.added_to_queue'))
 			end
 
 			it "adds user to queue" do
@@ -138,10 +137,9 @@ RSpec.describe TimeslotsController, type: :controller do
 			context "when user in queue" do
 				before(:each) { post :create }
 
-				it "redirects to main page with message" do
+				it "redirects to main page" do
 					delete :destroy
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.removed_from_queue'))
 				end
 
 				it "removes user from queue" do

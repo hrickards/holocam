@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
 		user = User.authenticate_from_oauth request.env['omniauth.auth']
 		if user.present?
 			sign_in user
-			redirect_to root_url, notice: I18n.t('notice.signed_in')
+			redirect_to root_url
 		else
 			redirect_to root_url, alert: I18n.t('error.oauth_error')
 		end
@@ -32,9 +32,9 @@ class SessionsController < ApplicationController
 			# Check if user was just created
 			# TODO: Make this a little less hackish
 			if user.created_at >= 0.01.second.ago
-				redirect_to root_url, notice: I18n.t('notice.signed_up')
+				redirect_to root_url
 			else
-				redirect_to root_url, notice: I18n.t('notice.signed_in')
+				redirect_to root_url
 			end
 		else
 			redirect_to root_url, alert: I18n.t('error.invalid_username_password')
@@ -45,7 +45,7 @@ class SessionsController < ApplicationController
   def destroy
 		if signed_in?
 			sign_out
-			redirect_to root_url, notice: I18n.t('notice.signed_out')
+			redirect_to root_url
 		else
 			redirect_to root_url, alert: I18n.t('error.already_signed_out')
 		end

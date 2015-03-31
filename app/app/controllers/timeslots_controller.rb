@@ -26,7 +26,7 @@ class TimeslotsController < ApplicationController
   def create
 		if signed_in?
 			queue_manager.add current_user
-			redirect_to root_url, notice: I18n.t('notice.added_to_queue')
+			redirect_to root_url
 		else
 			redirect_to root_url, alert: I18n.t('error.must_be_signed_in')
 		end
@@ -37,7 +37,7 @@ class TimeslotsController < ApplicationController
 		if signed_in?
 			if queue_manager.in_queue?(current_user)
 				queue_manager.remove current_user
-				redirect_to root_url, notice: I18n.t('notice.removed_from_queue')
+				redirect_to root_url
 			else
 				redirect_to root_url, alert: I18n.t('error.not_in_queue')
 			end

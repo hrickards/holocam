@@ -17,10 +17,10 @@ feature "Traditional authentication" do
 			fill_in I18n.t('label.password'), with: @password
 		end
 		click_button I18n.t('button.sign_up')
-		expect(page).to have_content I18n.t('notice.signed_up')
+		expect(page).to have_link I18n.t('link.sign_out')
 
 		click_link I18n.t('link.sign_out')
-		expect(page).to have_content I18n.t('notice.signed_out')
+		expect(page).to have_link I18n.t('link.sign_up')
 	end
 
 	scenario "Signing back in and out with traditional authentication" do
@@ -30,9 +30,9 @@ feature "Traditional authentication" do
 			fill_in I18n.t('label.password'), with: @existing_password
 		end
 		click_button I18n.t('button.sign_in')
-		expect(page).to have_content I18n.t('notice.signed_in')
+		expect(page).to have_link I18n.t('link.sign_out')
 
 		click_link I18n.t('link.sign_out')
-		expect(page).to have_content I18n.t('notice.signed_out')
+		expect(page).to have_link I18n.t('link.sign_in')
 	end
 end

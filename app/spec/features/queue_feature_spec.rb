@@ -47,7 +47,6 @@ feature "Timeslots queue", js: true do
 	def check_on_now
 		within('#queue') do
 			expect(page).to have_content I18n.t('queue.on_now')
-			expect(page).to have_content I18n.t('queue.remove_me')
 		end
 	end
 
@@ -92,7 +91,7 @@ feature "Timeslots queue", js: true do
 		users.each { |user| @qm.add(user) }
 	end
 
-	context "when ogged in" do
+	context "when logged in" do
 		background do
 			@email = Faker::Internet.email
 			@password = Faker::Internet.password
@@ -116,7 +115,6 @@ feature "Timeslots queue", js: true do
 			scenario "when adding to queue" do
 				visit_queue
 				add_to_queue
-				check_queue_not_empty
 				check_on_now
 			end
 		end
@@ -135,7 +133,6 @@ feature "Timeslots queue", js: true do
 			scenario "when adding to queue" do
 				visit_queue
 				add_to_queue
-				check_queue_not_empty
 				check_on_queue
 			end
 
@@ -152,7 +149,6 @@ feature "Timeslots queue", js: true do
 				add_to_queue
 				step_queue_til_on_now(@current_user)
 				check_on_now
-				check_queue_not_empty
 			end
 
 			scenario "when adding to queue and waiting to die" do

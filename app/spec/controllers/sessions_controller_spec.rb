@@ -42,12 +42,11 @@ RSpec.describe SessionsController, type: :controller do
 
 		context "when user is logged out" do
 			context "when a valid OAuth hash is present" do
-				it "logs user in and redirects to main page with message" do
+				it "logs user in and redirects to main page" do
 					request.env['omniauth.auth'] = facebook_hash
 					get :create_from_oauth, provider: 'facebook'
 
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.signed_in'))
 					expect(controller.signed_in?).to eq(true)
 				end
 			end
@@ -81,24 +80,22 @@ RSpec.describe SessionsController, type: :controller do
 
 		context "when user is logged out" do
 			context "when a valid username/password are present and user already exists" do
-				it "logs user in and redirects to main page with message" do
+				it "logs user in and redirects to main page" do
 					@user = User.create! credentials
 					post :create_from_traditional, {email: credentials[:uid], password: credentials[:password]}
 
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.signed_in'))
 					expect(controller.signed_in?).to eq(true)
 					expect(controller.current_user).to eq(@user)
 				end
 			end
 
 			context "when a valid username/password are present and user doesn't already exist" do
-				it "logs user in and redirects to main page with message" do
+				it "logs user in and redirects to main page" do
 					@user = User.new credentials
 					post :create_from_traditional, {email: credentials[:uid], password: credentials[:password]}
 
 					expect(response).to redirect_to '/'
-					expect(flash[:notice]).to match(I18n.t('notice.signed_up'))
 					expect(controller.signed_in?).to eq(true)
 					expect(controller.current_user.uid).to eq(@user.uid)
 					# Expect @user to already be created
@@ -121,12 +118,11 @@ RSpec.describe SessionsController, type: :controller do
 
   describe "DELETE #destroy" do
 		context "when user is logged in" do
-			it "logs them out and redirects to main page with message" do
+			it "logs them out and redirects to main page" do
 				sign_in
 				delete :destroy
 
 				expect(response).to redirect_to '/'
-				expect(flash[:notice]).to match(I18n.t('notice.signed_out'))
 				expect(controller.signed_in?).to eq(false)
 			end
 		end

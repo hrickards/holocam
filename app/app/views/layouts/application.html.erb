@@ -42,11 +42,13 @@
 		<div class="alert alert-danger" role="alert">
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 			<span class="sr-only"><%= t 'error.error' %>:</span>
+			 <a class="close" data-dismiss="alert">×</a>
 			<%= flash[:alert] %>
 		</div>
   <% end %>
   <% if flash[:notice] %>
 		<div class="alert alert-info" role="alert">
+		 <a class="close" data-dismiss="alert">×</a>
 			<%= flash[:notice] %>
 		</div>
   <% end %>

@@ -32,6 +32,11 @@ html.full {
 		margin: 0;
 		padding: 0;
 	}
+	.alert {
+		position: fixed;
+		width: 100%;
+		z-index: 999;
+	}
 }
 
 // COMPONENTS
