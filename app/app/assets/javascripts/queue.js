@@ -76,11 +76,16 @@ function post_queue_form() {
 	form.append(csrf_input);
 	return form;
 }
+// Redirect to sign in page
+function sign_in() {
+	window.location.href = "/signin";
+}
 // Bind UI buttons to the above methods
 function bind_queue_buttons() {
 	// Buttons might not be present when this is executed
 	$("#queue").on("click", "#add_to_queue", add_to_queue);
 	$("#queue").on("click", "#remove_from_queue", remove_from_queue);
+	$("#queue").on("click", "#sign_in_to_queue", sign_in);
 }
 
 $("#queue").ready(function() {

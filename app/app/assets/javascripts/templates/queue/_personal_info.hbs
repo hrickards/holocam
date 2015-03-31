@@ -1,0 +1,10 @@
+<div class="queue_info">
+	<strong>{{queue.position}}</strong>
+	{{#ifOne queue.queue_length}}
+		{{t 'queue.position_label_singular'}}.
+	{{else}}
+		{{t 'queue.position_label'}}.
+	{{/ifOne}}
+
+	{{t 'queue.eta_label' }}: <strong>{{queue.eta}} {{t 'queue.eta_unit_label'}}</strong>.
+</div>

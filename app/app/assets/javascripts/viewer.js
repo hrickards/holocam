@@ -15,5 +15,4 @@ $("#viewer").ready(function() {
 
 	// Setup video streams
 	flowplayer("player", "assets/flowplayer.swf");
-	flowplayer("overall_player", "assets/flowplayer.swf");
 });

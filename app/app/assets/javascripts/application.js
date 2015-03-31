@@ -25,7 +25,6 @@
 //= require handlebars.runtime
 //= require_tree ./templates
 
-
 // Bootstrap
 //= require bootstrap-sprockets
 

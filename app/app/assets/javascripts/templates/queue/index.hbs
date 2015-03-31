@@ -1,24 +1,21 @@
-<h3>Queue</h3>
 {{#if signed_in}}
 	{{#if queue.in_queue}}
 		{{#if queue.current_user}}
-			<div> <b>{{t 'queue.on_now'}}</b> </div>
+			{{! If user is controlling the holocam, they get a message telling them that}}
+			{{> queue/_on_now}}
+		{{else}}
+			{{! If user is signed in and waiting in the queeu then they get specialised info and a remove button}}
+			{{> queue/_personal_info}}
+			{{> queue/_remove}}
 		{{/if}}
-
-		<div> <button type="button" id="remove_from_queue">{{t 'queue.remove_me'}}</button> </div>
-
-		{{#unless queue.current_user}}
-			<div> {{t 'queue.position_label' }}: {{queue.position}} </div>
-			<div> {{t 'queue.eta_label' }}: {{queue.eta}} </div>
-		{{/unless}}
 	{{else}}
-		<div> <button type="button" id="add_to_queue">{{t 'queue.add_me'}}</button> </div>
+		{{! If user is signed in and not in the queue they get the standard info and an add button}}
+		{{> queue/_info}}
+		{{> queue/_add}}
 	{{/if}}
-{{/if}}
 
-{{#if queue.queue_empty}}
-	{{t 'queue.queue_empty'}}
 {{else}}
-	<div> {{t 'queue.queue_length_label'}}: {{queue.queue_length}} </div>
-	<div> {{t 'queue.queue_eta_label'}}: {{queue.queue_eta}} </div>
+	{{! If user isn't signed in they get the standard info and a signin button}}
+	{{> queue/_info}}
+	{{> queue/_sign_in}}
 {{/if}}
