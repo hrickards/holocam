@@ -56,10 +56,10 @@ group :development, :test do
 	gem 'poltergeist'
 end
 
-# JS Templates
+# Client-side libraries packaged for asset pipeline
 gem 'handlebars_assets'
 gem 'i18n-js', '>= 3.0.0.rc8' 
-
-# Bootstrap for layout
 gem 'bootstrap-sass'
 gem 'font-awesome-rails'
+gem 'socket.io-rails'
+gem 'threejs-rails', git: 'git://github.com/marvindanig/threejs-rails.git'

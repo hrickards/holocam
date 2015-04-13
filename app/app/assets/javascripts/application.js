@@ -28,4 +28,7 @@
 // Bootstrap
 //= require bootstrap-sprockets
 
-//= require_tree .
+//= require alerts
+//= require handlebars_helpers
+//= require queue
+//= require viewer

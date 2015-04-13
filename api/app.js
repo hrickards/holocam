@@ -3,10 +3,6 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-// Serve static files out of /public
-var path = require('path');
-app.use(express.static(path.join(__dirname, '/public')));
-
 // Most console messages we only want to log in development mode, not production
 function log(msg) {
 	if (process.env.NODE_ENV != "production") {
@@ -22,7 +18,11 @@ var util = require("util");
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 // Data returned as raw hex characters, with each line split by a newline (0x0D)
-var serialPort = new SerialPort("/dev/tty.usbmodem1421", {baudrate: 250000, parity: 'odd', parser: serialport.parsers.readline("0d", "hex")});
+var serialPort = new SerialPort("/dev/tty.usbmodem1421", {
+	baudrate: 250000,
+	parity: 'odd',
+	parser: serialport.parsers.readline("0d", "hex")
+});
 
 serialPort.on("open", function() {
 	log("serial open");
@@ -57,7 +57,7 @@ serialPort.on("open", function() {
 	});
 });
 
-// Listen on port 3000
-http.listen(3000, function() {
-	console.log("Listening on *:3000");
+// Listen (LOCALLY) on port 3001
+http.listen(3001, 'localhost', function() {
+	console.log("Listening on localhost:3001");
 });

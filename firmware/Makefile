@@ -105,7 +105,7 @@ OPTLEVEL=3
 # described in the avrdude info page.
 # 
 AVRDUDE_PROGRAMMERID=arduino
-AVRDUDE_PORT=/dev/ttyACM0
+AVRDUDE_PORT=/dev/tty.usbmodem1421
 AVRDUDE_BITRATE=115200
 
 
