@@ -8,6 +8,6 @@ iface lo inet loopback
 # The primary network interface
 auto eth0
 iface eth0 inet static
-	address 18.90.0.125
-	netmask 255.255.0.0
-	gateway 18.90.0.1
+    address 18.90.0.124
+    netmask 255.255.0.0
+    gateway 18.90.0.1
