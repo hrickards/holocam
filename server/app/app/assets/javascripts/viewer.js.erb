@@ -14,5 +14,11 @@ $("#viewer").ready(function() {
 	$(window).resize(position_page);
 
 	// Setup video streams
-	flowplayer("player", "assets/flowplayer.swf");
+	flowplayer("player", "<%= asset_path "flowplayer.swf" %>", {
+		plugins: {
+			controls: {
+				url: "<%= asset_path "flowplayer.controls.swf" %>"
+			}
+		}
+	});
 });
