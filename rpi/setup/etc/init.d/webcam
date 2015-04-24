@@ -1,0 +1,26 @@
+#!/bin/sh
+#Filename: /etc/init.d/webcam
+
+# Based on http://ram.kossboss.com/start-script-daemon-debian-ubuntu/
+ 
+# The following part always gets executed.
+echo "Holocam Webcam Streaming"
+ 
+# The following part carries out specific functions depending on arguments.
+case "$1" in
+start)
+echo "Holocam Webcam Streaming - STARTED"
+# if this file continously outputs to the shell, you should smake it be quiet with > /dev/null and 2> /dev/null
+/home/pi/holocam/server/camera/stream.sh 2> /dev/null > /dev/null &
+;;
+stop)
+echo "Holocam Webcam Streaming - STOPPED"
+killall avconv
+;;
+*)
+echo "Usage: /etc/init.d/webcam {start|stop}"
+exit 1
+;;
+esac
+ 
+exit 0

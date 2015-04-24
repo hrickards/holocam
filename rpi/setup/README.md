@@ -15,3 +15,4 @@ Password: `holocampassword`
 * Add your public key to `.ssh/authorized_keys` for passwordless login
 * Setup networking (see `/etc/network/interfaces`)
 * Install required software
+* Copy `/etc/init.d/webcam` init script, and use `sudo update-rc.d webcam defaults` to enable it by default
