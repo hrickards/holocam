@@ -32,15 +32,14 @@ serialPort.on("open", function() {
 		log('socket connected');
 
 		// Bind each of our commands to transmit from web to arduino
-		// TODO: Pass in callback for errors
 		commands.forEach(function(command) {
-			command.bindTransmit(socket, serialPort);
+			command.bindTransmit(socket, serialPort, undefined, log);
 		});
 
 		// Repeatedly request the current position
 		// TODO: Is repeated polling really the best way to do this
 		setInterval(function() {
-			require('./command.js').currentPosition.transmit();
+			require('./command.js').currentPosition.transmit(undefined, log);
 		}, 100);
 	});
 
@@ -49,7 +48,7 @@ serialPort.on("open", function() {
 		// Pass it into each of our commands, and they'll handle the rest
 		// TODO: Pass in callback for errors
 		commands.forEach(function(command) {
-			var output = command.receive(data, serialPort, io);
+			var output = command.receive(data, serialPort, io, log);
 			if (output != false && output != -1 && typeof(output) != 'undefined')  {
 				io.emit(command.receiveSlug, output);
 			}
@@ -57,7 +56,7 @@ serialPort.on("open", function() {
 	});
 });
 
-// Listen (LOCALLY) on port 3001
-http.listen(3001, 'localhost', function() {
-	console.log("Listening on localhost:3001");
+// Listen on port 3001
+http.listen(3001, '0.0.0.0', function() {
+	console.log("Listening on 0.0.0.0:3001");
 });
