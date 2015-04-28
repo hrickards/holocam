@@ -11,7 +11,7 @@ case "$1" in
 start)
 echo "Holocam Webcam Streaming - STARTED"
 # if this file continously outputs to the shell, you should smake it be quiet with > /dev/null and 2> /dev/null
-/home/pi/holocam/server/camera/stream.sh 2> /dev/null > /dev/null &
+/home/pi/holocam/rpi/camera/stream.sh 2> /dev/null > /dev/null &
 ;;
 stop)
 echo "Holocam Webcam Streaming - STOPPED"

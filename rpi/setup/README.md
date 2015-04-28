@@ -6,9 +6,8 @@ Password: `holocampassword`
 (Fully-qualified) Hostname: studioholobotpi.mit.edu
 
 # Software
-* vim (`vim`)
 * Node.JS (v0.12.0 compiled [here](http://conoroneill.net/download-compiled-version-of-nodejs-0120-stable-for-raspberry-pi-here))
-* Tmux (`tmux`)
+* Dev-nicety stuff (`zsh`, `vim`, `tmux`)
 
 # Process
 * Setup Raspbian through standard installer, making sure to enable SSH
