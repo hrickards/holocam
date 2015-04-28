@@ -12,6 +12,7 @@ Password: `holocampassword`
 # Process
 * Setup Raspbian through standard installer, making sure to enable SSH
 * Add your public key to `.ssh/authorized_keys` for passwordless login
+* Ensure `PermitRootLogin no` and `PasswordAuthentication no` are present in `/etc/sshd/sshd_config` for secure SSH
 * Setup networking (see `/etc/network/interfaces`)
 * Install required software
 * Copy `/etc/init.d/webcam` init script, and use `sudo update-rc.d webcam defaults` to enable it by default
